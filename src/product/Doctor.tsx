@@ -51,7 +51,7 @@ export default function DoctorView() {
   return <div className="product-shell doctor-shell">
     <header className="doctor-bar"><a className="product-brand" href="/about"><img src="/icon.svg" alt="" /><span>diabeat<span>IT</span></span></a><span className="doctor-badge"><Stethoscope size={16} />Clinician view · read-only</span><div className="row"><button className="icon-btn" aria-label="Switch colour theme" onClick={() => setDark(!dark)}>{dark ? <Sun size={18} /> : <Moon size={18} />}</button><button className="btn secondary" onClick={() => print()}><Printer size={18} />Print</button></div></header>
     <main className="product-main doctor-main">
-      <div className="page-heading"><div><p className="eyebrow">SHARED BY THE PATIENT FOR {view.label.toUpperCase()}</p><h1>{view.patientName}</h1><p className="muted"><Clock3 size={16} /> Records from {fmt(view.fromDate)} · opened {fmt(view.generatedAt, true)} IST · link valid until {fmt(view.expiresAt)}</p></div></div>
+      <div className="page-heading"><div><p className="doctor-for">Shared by the patient for {view.label}</p><h1>{view.patientName}</h1><p className="muted"><Clock3 size={16} /> Records from {fmt(view.fromDate)} · opened {fmt(view.generatedAt, true)} IST · link valid until {fmt(view.expiresAt)}</p></div></div>
       <Notice>All information is patient-reported in DiabeatIT and has not been verified by a clinician. Glucose values are copied from the patient’s meter; doses are as the patient recorded them.</Notice>
       {overlaps.map(o => <Notice error key={o.ingredient}>Same active ingredient in {o.products.length} active products: <strong>{o.ingredient}</strong> — {o.products.map(p => p.name).join(' and ')}. Ingredients as entered by the patient; please confirm.</Notice>)}
 

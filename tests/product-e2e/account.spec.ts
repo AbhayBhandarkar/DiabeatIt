@@ -11,7 +11,7 @@ test('real registration is empty and private; logout/login restores the account 
     await expect(page.locator('main')).not.toContainText(/demo mode|fictional patient|sample patient|switch role|ananya|meera/i);
     await navigate(page, 'Settings & privacy');
     await page.locator('main').getByRole('button', { name: 'Sign out', exact: true }).click();
-    await expect(page.getByRole('heading', { name: 'Make room for better care.' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Create your account' })).toBeVisible();
     expect((await page.request.get(`/api/v2/spaces/${account.spaceId}`)).status()).toBe(401);
     await page.getByRole('button', { name: 'Sign in', exact: true }).click();
     await page.getByLabel('Email address', { exact: true }).fill(account.email);

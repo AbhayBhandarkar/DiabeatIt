@@ -9,7 +9,7 @@ export const unique = (prefix: string) => `${prefix}-${randomUUID().slice(0, 8)}
 export async function register(page: Page): Promise<Account> {
   const account = { email: `${randomUUID()}@example.invalid`, password: `E2e!${randomUUID()}`, name: 'Browser Tester', spaceId: '' };
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'Make room for better care.' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Create your account' })).toBeVisible();
   await page.getByLabel('Your name', { exact: true }).fill(account.name);
   await page.getByLabel('Email address', { exact: true }).fill(account.email);
   await page.getByLabel('Password', { exact: true }).fill(account.password);

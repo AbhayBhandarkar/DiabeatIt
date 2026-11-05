@@ -103,7 +103,7 @@ export function ScanDialog({ onFound, onClose }: { onFound: (id: string) => void
   }, [onFound]);
   return <Dialog title="Scan to sign in on a computer" onClose={onClose}>
     <div className="scanner"><video ref={video} playsInline muted aria-label="Camera preview" /><span className="scanner-frame" aria-hidden="true"><ScanLine size={40} /></span></div>
-    <p className="muted">On the computer, open DiabeatIT and choose <strong>Use my phone</strong>. Point this camera at the code.</p>
+    <p className="muted">On the computer, open DiabeatIT and choose <strong>Phone sign-in</strong>. Point this camera at the code.</p>
     {error && <Notice error>{error}</Notice>}
   </Dialog>;
 }

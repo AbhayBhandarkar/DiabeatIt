@@ -105,8 +105,8 @@ for (const device of ['phone', 'desktop']) {
     await context.close();
     if (want('auth')) {
       const { context: c2, page: p2 } = await session(device, theme);
-      await p2.goto('/'); await p2.getByRole('heading', { name: 'Make room for better care.' }).waitFor(); await shot(p2, `${tag}-auth`);
-      if (device === 'desktop') { await p2.getByRole('button', { name: 'Use my phone' }).click(); await p2.locator('.qr-frame img').waitFor(); await shot(p2, `${tag}-qr-login`); }
+      await p2.goto('/'); await p2.getByRole('heading', { name: 'Create your account' }).waitFor(); await shot(p2, `${tag}-auth`);
+      if (device === 'desktop') { await p2.getByRole('button', { name: 'Phone sign-in' }).click(); await p2.locator('.qr-frame img').waitFor(); await shot(p2, `${tag}-qr-login`); }
       await c2.close();
     }
     if (want('about')) { const { context: c3, page: p3 } = await session(device, theme); await p3.goto('/about'); await p3.locator('h1').waitFor(); await shot(p3, `${tag}-about`); await shot(p3, `${tag}-about-full`, true); await c3.close(); }

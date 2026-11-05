@@ -1,0 +1,160 @@
+{
+  "provider": "groq",
+  "textModel": "qwen/qwen3.8-27b",
+  "visionModel": "qwen/qwen3.8-27b",
+  "fallback": "openai/gpt-oss-20b",
+  "ranAt": "2026-11-05T06:39:14.870Z",
+  "mythCheck": {
+    "cases": 13,
+    "correct": 13,
+    "validCitations": 13,
+    "medianMs": 670,
+    "rows": [
+      {
+        "claim": "Bitter gourd juice can replace my diabetes tablets",
+        "expected": "myth",
+        "verdict": "myth",
+        "correct": true,
+        "citedKnown": true,
+        "ms": 2511
+      },
+      {
+        "claim": "People with diabetes can never eat rice",
+        "expected": "myth",
+        "verdict": "myth",
+        "correct": true,
+        "citedKnown": true,
+        "ms": 811
+      },
+      {
+        "claim": "If my sugar is normal I can stop my medicine",
+        "expected": "myth",
+        "verdict": "myth",
+        "correct": true,
+        "citedKnown": true,
+        "ms": 670
+      },
+      {
+        "claim": "Insulin damages the kidneys",
+        "expected": "myth",
+        "verdict": "myth",
+        "correct": true,
+        "citedKnown": true,
+        "ms": 372
+      },
+      {
+        "claim": "Only overweight people get diabetes",
+        "expected": "myth",
+        "verdict": "myth",
+        "correct": true,
+        "citedKnown": true,
+        "ms": 3381
+      },
+      {
+        "claim": "Diabetes can spread from one person to another",
+        "expected": "myth",
+        "verdict": "myth",
+        "correct": true,
+        "citedKnown": true,
+        "ms": 671
+      },
+      {
+        "claim": "Eating sugar is the only cause of type 2 diabetes",
+        "expected": "myth|partly-true",
+        "verdict": "myth",
+        "correct": true,
+        "citedKnown": true,
+        "ms": 564
+      },
+      {
+        "claim": "Cinnamon cures diabetes",
+        "expected": "myth",
+        "verdict": "myth",
+        "correct": true,
+        "citedKnown": true,
+        "ms": 5899
+      },
+      {
+        "claim": "Taking two cold medicines that both contain paracetamol is always safe",
+        "expected": "myth",
+        "verdict": "myth",
+        "correct": true,
+        "citedKnown": true,
+        "ms": 355
+      },
+      {
+        "claim": "Regular walking helps manage blood glucose",
+        "expected": "supported",
+        "verdict": "supported",
+        "correct": true,
+        "citedKnown": true,
+        "ms": 942
+      },
+      {
+        "claim": "You can have diabetes without feeling any symptoms",
+        "expected": "supported",
+        "verdict": "supported",
+        "correct": true,
+        "citedKnown": true,
+        "ms": 349
+      },
+      {
+        "claim": "People with diabetes should check their feet every day",
+        "expected": "supported",
+        "verdict": "supported",
+        "correct": true,
+        "citedKnown": true,
+        "ms": 364
+      },
+      {
+        "claim": "5G towers cause diabetes",
+        "expected": "not-covered|myth",
+        "verdict": "not-covered",
+        "correct": true,
+        "citedKnown": true,
+        "ms": 394
+      }
+    ]
+  },
+  "prescriptionScan": {
+    "ok": true,
+    "ms": 1351,
+    "medicinesExpected": 4,
+    "namesFound": 4,
+    "strengthsCorrect": 4,
+    "timingsCorrect": 3,
+    "extraMedicines": 0,
+    "rows": [
+      {
+        "expected": "/glycomet/i",
+        "found": true,
+        "strength": true,
+        "timing": false
+      },
+      {
+        "expected": "/amaryl/i",
+        "found": true,
+        "strength": true,
+        "timing": true
+      },
+      {
+        "expected": "/telma/i",
+        "found": true,
+        "strength": true,
+        "timing": true
+      },
+      {
+        "expected": "/atorva/i",
+        "found": true,
+        "strength": true,
+        "timing": true
+      }
+    ]
+  },
+  "foodPhoto": {
+    "ok": false,
+    "ms": 239,
+    "items": [],
+    "note": "Vegetarian thali photo (Wikimedia Commons, CC BY-SA 4.0); identification only, no ground-truth weights."
+  }
+}

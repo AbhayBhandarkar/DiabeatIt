@@ -35,7 +35,7 @@ try {
   assert.ok(response);
   assert.equal(response.status(), 200);
   assert.ok(response.headers()['content-security-policy']?.includes("default-src 'self'"));
-  await page.getByRole('heading', { name: 'Make room for better care.' }).waitFor();
+  await page.getByRole('heading', { name: 'Create your account' }).waitFor();
   assert.ok(await page.locator('script[src]').evaluateAll(elements => elements.some(element => new URL(element.src).pathname.startsWith('/assets/'))));
   await page.waitForFunction(() => {
     const logo = document.querySelector('.product-brand img');
@@ -43,7 +43,7 @@ try {
   });
   assert.equal(await page.getByRole('button', { name: 'Explore the working demo', exact: true }).count(), 0);
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
-  await page.getByRole('heading', { name: 'Good to have you back.' }).waitFor();
+  await page.getByRole('heading', { name: 'Welcome back' }).waitFor();
   assert.equal((await context.request.get('/api/v2/me', { timeout: 20_000 })).status(), 401);
 
   stage = 'random-account registration and cookie';

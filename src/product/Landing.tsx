@@ -35,7 +35,7 @@ export default function Landing() {
     <main>
       <section className="hero">
         <div className="hero-copy">
-          <p className="site-kicker"><Sparkles size={16} />Built for people with diabetes aged 40–65 and their families</p>
+          <p className="site-kicker"><Sparkles size={16} />For adults with diabetes, and the family who help</p>
           <h1>Diabetes care that fits <em>real life</em> in India.</h1>
           <p className="lead">Prescriptions from three doctors, a cupboard of strips, and relatives full of advice. DiabeatIT turns it into one calm routine and one timeline any doctor can read in a minute.</p>
           <div className="hero-cta"><a className="site-btn primary" href="/">Start free<ArrowRight size={18} /></a><a className="site-btn ghost" href="#features">See how it works</a></div>

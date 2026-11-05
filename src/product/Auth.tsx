@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { ArrowUpRight, ShieldCheck, Users, Eye, EyeOff, Stethoscope, Sparkles, QrCode } from 'lucide-react';
+import { ArrowUpRight, Eye, EyeOff, QrCode } from 'lucide-react';
 import { request } from './context';
 import { Field } from './ui';
 import { DesktopQrLogin } from './DeviceLogin';
@@ -16,40 +16,40 @@ export default function Auth({ onAuth }: { onAuth: (me: MeResponse, codes?: stri
       else { const response = await request<RegisterResponse>(`/auth/${mode}`, 'POST', mode === 'register' ? { email, password, name: String(f.get('name')), consent: true } : { email, password }); onAuth(response, response.recoveryCodes); }
     } catch (e) { setError(e instanceof Error ? e.message : 'Could not sign in.'); } finally { setPending(false); }
   }
-  const tabs: [Mode, string][] = [['register', 'Get started'], ['login', 'Sign in'], ['phone', 'Use my phone']];
+  const tabs: [Mode, string][] = [['register', 'Get started'], ['login', 'Sign in'], ['phone', 'Phone sign-in']];
   return <div className="product-auth">
     <aside className="auth-aside">
       <a className="product-brand" href="/about"><img src="/icon.svg" alt="" /><span>diabeat<span>IT</span></span></a>
-      <div>
-        <p className="auth-kicker">YOUR HEALTH. YOUR PEOPLE. YOUR PACE.</p>
-        <h1>A clearer day<br />starts here.</h1>
-        <p>Medicines, meals, visits and the people who help — in one calm place. Built for real routines in India, not perfect ones.</p>
-        <div className="auth-features">
-          <span><Sparkles />Snap a prescription or a plate — AI drafts it, you confirm</span>
-          <span><Stethoscope />One timeline any doctor can read in a minute</span>
-          <span><Users />Family can help, only with what you share</span>
-          <span><ShieldCheck />Every fact links to its official source</span>
-        </div>
+      <div className="auth-pitch">
+        <h1>Your diabetes, organised.</h1>
+        <p>Tablets from three doctors, readings on scraps of paper, a visit next month. DiabeatIT puts it on one page that you, your family and your doctor can follow.</p>
       </div>
-      <small>Records and education support — not a replacement for your care team. <a href="/about">How DiabeatIT works</a></small>
+      <figure className="auth-preview" aria-label="Example of a day in DiabeatIT">
+        <div className="ap-head"><strong>Today</strong><span>Thu, 5 Nov</span></div>
+        <div className="ap-row"><b>08:00</b><span>Telma 40<small>Telmisartan 40 mg</small></span><i className="ok">Taken</i></div>
+        <div className="ap-row"><b>08:30</b><span>Glycomet SR 500<small>After breakfast</small></span><i className="ok">Taken</i></div>
+        <div className="ap-row"><b>20:30</b><span>Glycomet SR 500<small>After dinner</small></span><i>Due</i></div>
+        <div className="ap-split"><div><small>HbA1c</small><strong>8.4 → 7.3 %</strong></div><div><small>Next visit</small><strong>Dr Mehta, 3 Dec</strong></div></div>
+        <figcaption>Example record</figcaption>
+      </figure>
+      <small>Not a substitute for your doctor. In an emergency, call 112. <a href="/about">About DiabeatIT</a></small>
     </aside>
     <main className="auth-form">
       <div className="auth-tabs">{tabs.map(([m, label]) => <button key={m} aria-pressed={mode === m} className={mode === m ? 'active' : ''} onClick={() => { setMode(m); setError(''); }}>{m === 'phone' && <QrCode size={16} />}{label}</button>)}</div>
-      {mode === 'phone' ? <><p className="eyebrow">NO PASSWORD ON THIS COMPUTER</p><h2>Scan with your phone.</h2><p className="muted">Already signed in on your phone? Use it as your key.</p><DesktopQrLogin onAuth={me => onAuth(me)} /></> : <>
-        <p className="eyebrow">WELCOME TO YOUR SPACE</p>
-        <h2>{mode === 'register' ? 'Make room for better care.' : mode === 'login' ? 'Good to have you back.' : 'Recover your account.'}</h2>
-        <p className="muted">{mode === 'register' ? 'Start with an empty, private workspace. Add only what you want to keep track of.' : mode === 'recover' ? 'Use one of the recovery codes saved when you registered.' : 'Your records and shared spaces will be here.'}</p>
+      {mode === 'phone' ? <><h2>Sign in with your phone</h2><p className="muted">If DiabeatIT is open on your phone, you don’t need a password here.</p><DesktopQrLogin onAuth={me => onAuth(me)} /></> : <>
+        <h2>{mode === 'register' ? 'Create your account' : mode === 'login' ? 'Welcome back' : 'Reset your password'}</h2>
+        <p className="muted">{mode === 'register' ? 'Your account starts empty. Nothing is shared until you choose to.' : mode === 'recover' ? 'Use one of the recovery codes you saved when you signed up.' : 'Sign in with your email and password.'}</p>
         <form onSubmit={submit}>
           {mode === 'register' && <Field label="Your name"><input name="name" autoComplete="name" required maxLength={100} /></Field>}
           <Field label="Email address"><input name="email" type="email" autoComplete="email" required maxLength={254} /></Field>
           {mode === 'recover' && <Field label="Recovery code"><input name="recoveryCode" autoComplete="off" required minLength={64} maxLength={64} /></Field>}
           <Field label={mode === 'recover' ? 'New password' : 'Password'} hint={mode !== 'login' ? 'Use at least 12 characters.' : ''}><div className="password-field"><input aria-label={mode === 'recover' ? 'New password' : 'Password'} name="password" type={show ? 'text' : 'password'} autoComplete={mode === 'login' ? 'current-password' : 'new-password'} required minLength={mode === 'login' ? 1 : 12} maxLength={256} /><button type="button" className="icon-btn" aria-label={show ? 'Hide password' : 'Show password'} onClick={() => setShow(!show)}>{show ? <EyeOff size={18} /> : <Eye size={18} />}</button></div></Field>
-          {mode === 'register' && <label className="toggle-row"><input type="checkbox" required /><span>I agree to store my records for personal tracking. I understand that clinical screening, emergency monitoring, and professional consultation are not provided by this installation.</span></label>}
+          {mode === 'register' && <label className="toggle-row"><input type="checkbox" required /><span>I agree to store my records here. I understand DiabeatIT does not give medical advice or emergency help.</span></label>}
           {error && <p className="auth-error" role="alert">{error}</p>}
           <button className="btn primary" disabled={pending}>{pending ? 'Please wait…' : mode === 'register' ? 'Create my account' : mode === 'login' ? 'Sign in' : 'Reset password'}<ArrowUpRight size={18} /></button>
         </form>
         {mode === 'login' && <button className="btn ghost" onClick={() => setMode('recover')}>Use a recovery code</button>}
-        <p className="small muted">Email is an account identifier, not a verified identity. Use test records only on this pilot installation.</p>
+        <p className="small muted">This is a pilot. Please use test records, not your real medical details.</p>
       </>}
     </main>
   </div>;
