@@ -13,7 +13,7 @@ const headers = { 'X-Diabeatit-Client': 'web', Origin: base };
 const browser = await chromium.launch();
 const devices = {
   desktop: { viewport: { width: 1440, height: 900 }, deviceScaleFactor: 2 },
-  phone: { viewport: { width: 393, height: 852 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true, userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1' },
+  phone: { viewport: { width: 393, height: 798 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true, userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1' },
 };
 
 async function session(device, theme) {
@@ -34,6 +34,15 @@ async function go(page, device, name) {
   } else await page.locator('.product-sidebar').getByRole('button', { name, exact: true }).click();
   await page.waitForTimeout(500);
 }
+async function aiRun(page, button, result, errorSel = 'dialog .notice.warning') {
+  for (let attempt = 0; attempt < 5; attempt++) {
+    await button.click(); await page.waitForTimeout(600);
+    const outcome = await Promise.race([result.waitFor({ timeout: 90000 }).then(() => 'ok'), page.locator(errorSel).last().waitFor({ timeout: 90000 }).then(() => 'error')]);
+    if (outcome === 'ok') return;
+    await page.waitForTimeout(25000);
+  }
+  throw new Error('AI kept failing');
+}
 const shot = async (page, file, full = false) => { await page.waitForTimeout(400); await page.screenshot({ path: `${out}/${file}.png`, fullPage: full }); console.log('captured', file); };
 const want = n => !only.length || only.some(o => n.includes(o));
 
@@ -45,12 +54,28 @@ for (const device of ['phone', 'desktop']) {
     const tag = `${device}-${theme}`;
     if (want('today')) await shot(page, `${tag}-today`);
     if (want('medicines')) { await go(page, device, 'Medicines'); await shot(page, `${tag}-medicines`); }
+    if (want('rxscan') && theme === 'light') {
+      await go(page, device, 'Medicines');
+      await page.getByRole('button', { name: 'Scan prescription' }).click();
+      await page.locator('dialog input[type=file]').setInputFiles('docs/assets/sample-prescription.jpg');
+      await page.locator('dialog img.meal-photo').waitFor(); await shot(page, `${tag}-rx-photo`);
+      await page.getByRole('checkbox', { name: /Send this photo/ }).check();
+      await aiRun(page, page.getByRole('button', { name: 'Read with AI' }), page.locator('.scan-draft').first()); await page.locator('.scan-draft').first().scrollIntoViewIfNeeded();
+      await shot(page, `${tag}-rx-result`); await page.keyboard.press('Escape'); await page.waitForTimeout(400);
+    }
+    if (want('foodphoto') && theme === 'light') {
+      await go(page, device, 'Food');
+      await page.getByRole('button', { name: 'Take a meal photo' }).click();
+      await page.locator('dialog input[type=file]').setInputFiles('docs/assets/sample-meal.jpg');
+      await page.getByRole('checkbox', { name: /Send this resized photo/ }).check();
+      await aiRun(page, page.getByRole('button', { name: /Identify foods with AI/ }), page.locator('dialog article.panel h3').first()); await page.locator('dialog article.panel').first().scrollIntoViewIfNeeded();
+      await shot(page, `${tag}-food-photo`); await page.keyboard.press('Escape'); await page.waitForTimeout(400);
+    }
     if (want('timeline')) {
       await go(page, device, 'Timeline'); await shot(page, `${tag}-timeline`);
       if (theme === 'light') {
-        await page.getByRole('button', { name: /Create summary/ }).click();
-        await page.locator('.ai-summary').waitFor({ timeout: 60000 });
-        await page.locator('.ai-panel').scrollIntoViewIfNeeded();
+        await aiRun(page, page.getByRole('button', { name: /Create summary|Refresh summary/ }), page.locator('.ai-summary'), '.ai-panel .notice.warning');
+        await page.locator(device === 'phone' ? '.ai-summary' : '.ai-panel').evaluate(el => { el.scrollIntoView({ block: 'start' }); window.scrollBy(0, -110); });
         await shot(page, `${tag}-timeline-summary`);
         await page.locator('.timeline').scrollIntoViewIfNeeded(); await shot(page, `${tag}-timeline-feed`);
       }
@@ -59,8 +84,7 @@ for (const device of ['phone', 'desktop']) {
     if (want('learn')) {
       await go(page, device, 'Learn'); await shot(page, `${tag}-learn`);
       if (theme === 'light') {
-        await page.getByRole('button', { name: 'Bitter gourd juice can replace my diabetes tablets' }).click();
-        await page.locator('.myth-result').waitFor({ timeout: 60000 }); await page.locator('.myth-check').scrollIntoViewIfNeeded();
+        await aiRun(page, page.getByRole('button', { name: 'Bitter gourd juice can replace my diabetes tablets' }), page.locator('.myth-result'), '.myth-check .notice.warning'); await page.locator('.myth-check').scrollIntoViewIfNeeded();
         await shot(page, `${tag}-myth`);
       }
     }
@@ -73,7 +97,7 @@ for (const device of ['phone', 'desktop']) {
       const doctor = await browser.newContext({ ...devices[device], baseURL: base, colorScheme: theme, reducedMotion: 'reduce', serviceWorkers: 'block' });
       const dp = await doctor.newPage(); await dp.goto(`/doctor#${link.token}`); await dp.locator('h1').waitFor();
       await shot(dp, `${tag}-doctor`);
-      await dp.getByRole('button', { name: /Generate summary/ }).click(); await dp.locator('.ai-summary').waitFor({ timeout: 60000 });
+      await aiRun(dp, dp.getByRole('button', { name: /Generate summary|Regenerate/ }), dp.locator('.ai-summary'), '.ai-panel .notice.warning');
       await dp.locator('.ai-panel').scrollIntoViewIfNeeded(); await shot(dp, `${tag}-doctor-summary`);
       await doctor.close();
       await page.request.delete(`/api/v2/spaces/${me.spaceId}/clinician-links/${link.id}`, { headers });

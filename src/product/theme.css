@@ -96,7 +96,6 @@ dialog.modal-dialog::backdrop { background: #0e0b2bb3; }
 .product-shell label.space-select:not(.single) > span { font-size: .8rem; color: var(--p-muted); }
 .home-summary { margin-block: 1.25rem .5rem; }
 .home-stat > strong small { margin-left: .3rem; font: 500 .95rem 'DM Sans', sans-serif; color: var(--p-muted); }
-.ref-chip { min-height: 1.6rem; padding: 0 .45rem; font-size: .72rem; }
 .heading-actions { display: flex; flex-wrap: wrap; gap: .75rem; }
 .section-title { margin-top: 1.75rem !important; }
 .insight-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-block: 1.25rem; }
@@ -118,7 +117,8 @@ dialog.modal-dialog::backdrop { background: #0e0b2bb3; }
 .ai-section ul, .ai-columns ul { margin: 0; padding-left: 1.2rem; }
 .ai-section li, .ai-columns li { margin: .45rem 0; line-height: 1.6; }
 .ref-chips { display: inline-flex; flex-wrap: wrap; gap: .3rem; margin-left: .4rem; vertical-align: middle; }
-.ref-chip { min-height: 1.9rem; padding: .1rem .55rem; border: 1px solid var(--p-border); border-radius: 999px; background: var(--p-soft); color: var(--p-primary); font: 600 .78rem ui-monospace, Consolas, monospace; cursor: pointer; }
+.ref-chip { min-height: 1.6rem; padding: 0 .45rem; border: 1px solid var(--p-border); border-radius: 999px; background: var(--p-soft); color: var(--p-primary); font: 600 .7rem/1.6rem ui-monospace, Consolas, monospace; cursor: pointer; }
+.ref-more { align-self: center; color: var(--p-muted); font-size: .8rem; }
 @media (hover: hover) { .ref-chip:hover { background: var(--p-primary); color: var(--p-on-primary); border-color: var(--p-primary); } }
 .ai-columns { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); gap: 1rem; }
 .ai-columns > div { padding: 1rem 1.1rem; border-radius: 1rem; background: var(--p-soft); }
@@ -174,6 +174,14 @@ dialog.modal-dialog::backdrop { background: #0e0b2bb3; }
 /* Prescription scan */
 .scan-draft { padding: 1rem; border: 1px solid var(--p-border); border-radius: 1rem; background: var(--p-surface); display: grid; gap: .75rem; }
 .scan-draft.excluded { opacity: .6; }
+.scan-draft .form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: .6rem .75rem; }
+.scan-draft .field label { font-size: .85rem; color: var(--p-muted); }
+.scan-draft .field input { min-height: 2.75rem !important; padding: .45rem .75rem !important; }
+.scan-draft .toggle-row { justify-content: flex-start; gap: .4rem; min-height: 0; padding-block: 0; border: 0; }
+.scan-draft fieldset { padding-top: .5rem; }
+.scan-draft fieldset legend { margin-bottom: .4rem; font-size: .9rem; color: var(--p-muted); }
+.scan-draft fieldset .row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .4rem; }
+.scan-draft label.chip { font-size: .85rem; align-self: stretch; }
 .confidence-high { background: #e5f5f2 !important; color: #1f6f65 !important; } .confidence-medium { background: #fff4e0 !important; color: #8a5300 !important; } .confidence-low { background: var(--p-danger-soft) !important; color: var(--p-danger) !important; }
 :root[data-theme="dark"] .confidence-high { background: #193631 !important; color: #8fe3d6 !important; } :root[data-theme="dark"] .confidence-medium { background: #3a2c12 !important; color: #ffcf7a !important; }
 
@@ -225,7 +233,20 @@ dialog.modal-dialog::backdrop { background: #0e0b2bb3; }
   .myth-form { flex-direction: column; }
   .heading-actions, .heading-actions .btn { width: 100%; }
 }
+@media (max-width: 540px) {
+  .product-shell .home-summary { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .5rem; }
+  .product-shell .home-stat { display: flex; flex-direction: column; align-items: flex-start; gap: .15rem; padding: .8rem .7rem; }
+  .product-shell .home-stat > strong { order: 2; font-size: 1.7rem; }
+  .product-shell .home-stat > strong small { display: block; margin: 0; font-size: .72rem; line-height: 1.3; }
+  .product-shell .home-stat > span:not(.small) { order: 1; font-size: .78rem; font-weight: 600; line-height: 1.3; }
+  .product-shell .home-stat > span.small { display: none; }
+  .product-shell .home-banner { padding: 1.4rem; }
+  .product-shell .home-banner h2 { font-size: 1.6rem; }
+  .product-shell .action-rail > :is(button, a) { flex-wrap: nowrap; }
+  .product-shell .action-rail > :is(button, a) > svg:last-child:not(:first-child) { display: none; }
+}
 @media (max-width: 540px) { .product-shell .home-banner::after { opacity: .3; } .match-choice { min-height: 4.25rem; } }
+.product-topbar > .row { justify-content: flex-start; }
 
 @media print {
   .doctor-bar, .ai-panel .btn, .timeline-actions, .product-toast { display: none !important; }

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Sparkles, Printer, ShieldCheck, Pill, FlaskConical, Activity, MessageCircleQuestion, Clock3, Stethoscope, Moon, Sun } from 'lucide-react';
 import { buildTimeline, glucoseStats, intakeStats, toMgdl } from '../../shared/timeline';
+import { overlappingIngredients } from '../../shared/medicineNames';
 import type { ClinicianView, GlucoseData, LabData, MedicineData, QuestionData } from '../../shared/v2';
 import type { TimelineSummaryResult } from '../../shared/ai';
 import { request } from './context';
@@ -33,6 +34,7 @@ export default function DoctorView() {
   const events = buildTimeline(view.entities, today, view.fromDate);
   const meds = view.entities.medicines.map(e => ({ e, m: d<MedicineData>(e) }));
   const active = meds.filter(x => x.m.status === 'active'), stopped = meds.filter(x => x.m.status === 'archived');
+  const overlaps = overlappingIngredients(active.map(x => ({ id: x.e.id, name: x.m.name, ingredient: x.m.ingredient })));
   const labs = view.entities.labs.map(e => d<LabData>(e)).filter(l => l.takenOn >= view.fromDate);
   const labGroups = [...labs.reduce((m, l) => m.set(l.name, [...(m.get(l.name) ?? []), l]), new Map<string, LabData[]>())].map(([name, rows]) => ({ name, rows: rows.sort((a, b) => b.takenOn.localeCompare(a.takenOn)) }));
   const g = glucoseStats(view.entities.glucose, view.fromDate), adherence = intakeStats(view.entities.intakes, view.fromDate);
@@ -51,6 +53,7 @@ export default function DoctorView() {
     <main className="product-main doctor-main">
       <div className="page-heading"><div><p className="eyebrow">SHARED BY THE PATIENT FOR {view.label.toUpperCase()}</p><h1>{view.patientName}</h1><p className="muted"><Clock3 size={16} /> Records from {fmt(view.fromDate)} · opened {fmt(view.generatedAt, true)} IST · link valid until {fmt(view.expiresAt)}</p></div></div>
       <Notice>All information is patient-reported in DiabeatIT and has not been verified by a clinician. Glucose values are copied from the patient’s meter; doses are as the patient recorded them.</Notice>
+      {overlaps.map(o => <Notice error key={o.ingredient}>Same active ingredient in {o.products.length} active products: <strong>{o.ingredient}</strong> — {o.products.map(p => p.name).join(' and ')}. Ingredients as entered by the patient; please confirm.</Notice>)}
 
       <div className="insight-cards">
         <article className="insight-card"><Pill /><span>Active medicines</span><strong>{active.length}</strong><p>{stopped.length} stopped in record</p></article>

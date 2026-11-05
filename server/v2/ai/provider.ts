@@ -47,7 +47,7 @@ export async function runAi<F extends AiFeature>(feature: F, userText: string, o
   const key = createHash('sha256').update(`${feature}\n${config.baseUrl}\n${userText}\n${options.image ?? ''}`).digest('hex');
   const hit = cache.get(key);
   if (hit && Date.now() - hit.at < CACHE_MS) return hit.value as AiResultMap[F];
-  const models = options.image ? [config.visionModel] : [config.textModel, ...(config.fallbackTextModel ? [config.fallbackTextModel] : [])];
+  const models = options.image ? [config.visionModel, config.visionModel] : [config.textModel, ...(config.fallbackTextModel ? [config.fallbackTextModel] : []), config.textModel];
   let last: ApiError = new ApiError(502, 'AI_UNAVAILABLE', 'The AI assistant could not complete this request. Nothing was saved.');
   for (const model of models) {
     try {
@@ -78,7 +78,12 @@ async function callModel<F extends AiFeature>(feature: F, model: string, userTex
     if (response.status === 429 && wait > 0 && wait <= 8) { await response.body?.cancel(); await new Promise(r => setTimeout(r, wait * 1000)); response = await send(); }
   } catch { throw new ApiError(502, 'AI_UNAVAILABLE', 'The AI assistant did not respond. Nothing was saved; please try again.'); }
   if (response.status === 429) { await response.body?.cancel(); throw new ApiError(429, 'AI_BUSY', 'The AI assistant is busy right now. Please try again in a minute.'); }
-  if (!response.ok) { await response.body?.cancel(); console.warn(`AI provider returned HTTP ${response.status} for ${feature}`); throw new ApiError(502, 'AI_UNAVAILABLE', 'The AI assistant could not complete this request. Nothing was saved.'); }
+  if (!response.ok) {
+    const detail = (await response.text().catch(() => '')).slice(0, 2000);
+    console.warn(`AI provider returned HTTP ${response.status} for ${feature} (${model})`);
+    if (response.status === 400 && /json_validate_failed|failed_generation/.test(detail)) throw new ApiError(502, 'AI_INVALID_OUTPUT', 'The AI reply did not pass our safety checks, so it was discarded. Please try again.');
+    throw new ApiError(502, 'AI_UNAVAILABLE', 'The AI assistant could not complete this request. Nothing was saved.');
+  }
   const text = await response.text();
   if (text.length > 200000) throw new ApiError(502, 'AI_INVALID_OUTPUT', 'The AI reply was too large to check.');
   let candidate: unknown;

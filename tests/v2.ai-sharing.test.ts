@@ -6,7 +6,7 @@ import { randomUUID } from 'node:crypto';
 import { openDatabase, type Database } from '../server/db';
 import { createV2Router } from '../server/v2';
 import { aiConfig, extractJson, runAi } from '../server/v2/ai/provider';
-import { foodPhotoResult, aiPrompts } from '../shared/ai';
+import { foodPhotoResult, aiPrompts, fitToSchema, timelineSummaryResult } from '../shared/ai';
 import { buildTimeline, timelinePrompt } from '../shared/timeline';
 import { evidenceCards } from '../shared/evidence';
 
@@ -36,6 +36,13 @@ describe('AI provider configuration', () => {
   });
   it('extracts JSON from small-model replies with reasoning or fences', () => {
     expect(extractJson('<think>hmm</think>```json\n{"a":1}\n```')).toEqual({ a: 1 });
+  });
+  it('repairs lists that leaked into the sections array and lists sent as one string', () => {
+    const broken = { overview: 'x', sections: [{ heading: 'Visits', points: [{ text: 'Seen', refs: ['app-1'] }, 'Loose point'] }, 'questionsForVisit', ':', ['Ask about feet?']], dataGaps: 'No eye exam; no BP' };
+    const fixed = timelineSummaryResult.parse(fitToSchema(broken));
+    expect(fixed.questionsForVisit).toEqual(['Ask about feet?']);
+    expect(fixed.dataGaps).toEqual(['No eye exam', 'no BP']);
+    expect(fixed.sections[0].points[1]).toEqual({ text: 'Loose point', refs: [] });
   });
   it('rejects model output carrying medical fields', () => {
     expect(() => foodPhotoResult.parse({ items: [{ name: 'rice', estimatedGrams: 100, uncertainty: 'rough', insulinDose: 2 }], limitations: '' })).toThrow();

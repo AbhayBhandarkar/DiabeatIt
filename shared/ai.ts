@@ -135,8 +135,24 @@ export function extractJson(raw: string): unknown {
 /** Small models often over-run length limits or return a list as one string. Normalise shape; never invent or rename fields. */
 const listKeys = new Set(['questionsForVisit', 'dataGaps', 'keyPoints', 'askPharmacist', 'evidenceIds', 'refs', 'timing']);
 const asList = (v: unknown) => typeof v === 'string' ? v.split(/;\s+|\n+/).map(s => s.replace(/^[-•*\d.)\s]+/, '').trim()).filter(Boolean) : Array.isArray(v) ? v.map(x => x && typeof x === 'object' ? Object.values(x).find(y => typeof y === 'string') ?? x : x) : v;
+/** Repairs a summary whose lists leaked into the sections array, e.g. [{…}, "questionsForVisit", ":", [...]]. */
+function repairSummary(obj: Record<string, unknown>): Record<string, unknown> {
+  if (!('overview' in obj) || !Array.isArray(obj.sections)) return obj;
+  const fixed: Record<string, unknown> = { ...obj, sections: [] as unknown[] };
+  let pending: string | null = null;
+  for (const entry of obj.sections) {
+    if (entry && typeof entry === 'object' && !Array.isArray(entry) && 'heading' in entry) {
+      const s = entry as { heading: unknown; points?: unknown };
+      (fixed.sections as unknown[]).push({ heading: s.heading, points: (Array.isArray(s.points) ? s.points : []).map(p => typeof p === 'string' ? { text: p, refs: [] } : p).filter(p => p && typeof p === 'object') });
+    } else if (typeof entry === 'string' && listKeys.has(entry)) pending = entry;
+    else if (Array.isArray(entry) && pending) { if (fixed[pending] === undefined) fixed[pending] = entry; pending = null; }
+  }
+  fixed.questionsForVisit ??= []; fixed.dataGaps ??= [];
+  return fixed;
+}
 export function fitToSchema(value: unknown, depth = 0): unknown {
   if (depth > 6) return value;
+  if (value && typeof value === 'object' && !Array.isArray(value) && depth === 0) value = repairSummary(value as Record<string, unknown>);
   if (typeof value === 'string') return value.length > 380 ? `${value.slice(0, 377).trimEnd()}…` : value;
   if (Array.isArray(value)) return value.filter(v => v !== '' && v !== null && v !== undefined).slice(0, 6).map(v => fitToSchema(v, depth + 1));
   if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value).map(([k, raw]) => { const v = listKeys.has(k) ? asList(raw) : raw; return [k, k === 'overview' || k === 'explanation' || k === 'summary' || k === 'limitations' ? (typeof v === 'string' ? v.slice(0, 700) : v) : k === 'medicines' || k === 'items' ? (Array.isArray(v) ? v.slice(0, 12).map(x => fitToSchema(x, depth + 1)) : v) : fitToSchema(v, depth + 1)]; }));

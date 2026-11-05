@@ -1,5 +1,6 @@
 /** Chronological view across record kinds. Pure functions shared by the patient app, the clinician view and AI prompts. */
 import type { Entity, EntityCollections, AppointmentData, LabData, MedicineData, IntakeData, GlucoseData, SymptomData, QuestionData } from './v2';
+import { overlappingIngredients } from './medicineNames';
 
 export type TimelineKind = 'appointment' | 'lab' | 'medicine' | 'intake' | 'glucose' | 'symptom' | 'question';
 export interface TimelineEvent { ref: string; id: string; kind: TimelineKind; date: string; at: string; title: string; detail: string; upcoming: boolean }
@@ -74,6 +75,7 @@ export function timelinePrompt(c: Collections & { meals?: Entity[] }, today: str
     `Today (IST): ${today}. Records from ${fromDate}.`,
     `Active medicines: ${active.map(x => `[${refOf('medicine', x.e.id)}] ${x.m.name} ${x.m.strength} at ${x.m.times.join('/') || 'unspecified times'}`).join('; ') || 'none recorded'}.`,
     `Medicine reports: ${i.taken} taken, ${i.missed} missed, ${i.unsure} unsure.`,
+    ...overlappingIngredients(active.map(x => ({ id: x.e.id, name: x.m.name, ingredient: x.m.ingredient }))).map(o => `Same active ingredient in more than one active product (entered by patient): ${o.ingredient} in ${o.products.map(p => `[${refOf('medicine', p.id)}] ${p.name}`).join(' and ')}.`),
     g ? `Glucose (mg/dL): ${g.count} readings, range ${g.min}-${g.max}, average ${g.mean}; ${g.byContext.map(x => `${x.context} avg ${x.mean} (n=${x.count})`).join(', ')}.` : 'Glucose: no readings recorded.',
     'Records (newest first):',
     ...events.map(e => `[${e.ref}] ${e.date}${e.upcoming ? ' (upcoming)' : ''} ${e.kind}: ${e.title}${e.detail ? ` — ${e.detail}` : ''}`),
