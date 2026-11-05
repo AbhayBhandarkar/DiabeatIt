@@ -1,0 +1,15 @@
+/* Lesson-only refinements; shared typography, cards and controls live in product.css. */
+.video-library-progress { display: grid; gap: 0.5rem; min-width: min(100%, 13rem); }
+.video-library-progress progress { width: 100%; height: 0.5rem; overflow: hidden; border: 0; border-radius: 1rem; background: var(--p-border); accent-color: var(--p-primary); }
+.video-library-progress progress::-webkit-progress-bar { background: var(--p-border); border-radius: 1rem; }
+.video-library-progress progress::-webkit-progress-value { background: var(--p-primary); border-radius: 1rem; }
+.video-library-progress progress::-moz-progress-bar { background: var(--p-primary); border-radius: 1rem; }
+dialog.modal-dialog:has(.video-player) { width: min(64rem, calc(100% - 2rem)); }
+.video-player .video-stage video::cue { background: #07151de6; color: #ffffff; }
+.video-player .video-transcript .p-source-excerpt { max-height: 24rem; overflow-y: auto; scrollbar-gutter: stable; }
+.video-player .checkpoint:focus-visible { outline: 3px solid var(--p-focus); outline-offset: 3px; }
+@media (max-width: 40rem) {
+  .video-library-progress { width: 100%; }
+  .video-player .modal-actions { justify-content: stretch; }
+  .video-player .modal-actions .btn { flex: 1 1 100%; }
+}

@@ -1,0 +1,22 @@
+A reminder was sent, but the log is empty. That does not establish whether a medicine was taken.
+
+Reminders, reports, and actual intake are different things. Keep the time and source of reports visible.
+
+If memory and records disagree, preserve the uncertainty. An app entry is not proof that medicine was swallowed.
+
+Checkpoint. No entry, and the person is unsure. What should the record say?
+
+Record unsure, with source and time. Ask a pharmacist about uncertainty, not an app.
+
+For suspected overdose or severe symptoms, seek urgent local medical help. Do not wait for an app review.
+
+Checkpoint: The log is empty and the person cannot remember. Which record is supported?
+- Definitely missed A missing entry does not prove a missed medicine. Keep the uncertainty visible.
+- Definitely taken There is not enough evidence to mark it taken. Preserve the person's uncertainty.
+- Unsure — include source and time Yes. Record what is known without inventing certainty. Seek professional guidance, not an app-generated dose decision.
+
+Sources:
+https://www.ahrq.gov/patient-safety/settings/hospital/match/chapter-3.html
+https://www.nhs.uk/conditions/poisoning/
+
+General education. No individual treatment advice or clinician signoff. Synthetic local Windows SAPI narration.

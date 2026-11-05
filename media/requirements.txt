@@ -1,0 +1,2 @@
+manim==0.22.0
+imageio-ffmpeg==0.6.0

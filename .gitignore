@@ -1,0 +1,22 @@
+node_modules/
+dist/
+.data/
+.env
+.env.*
+!.env.example
+test-results/
+playwright-report/
+android/
+*.log
+.venv/
+media/.venv/
+media/.cache/
+media/build/
+media/__pycache__/
+__pycache__/
+artifacts/
+.neon
+
+/PPT_Final_Teamplate_Health-a-thon 2026.pptx
+/Two-page Solution Brief Template.pptx
+

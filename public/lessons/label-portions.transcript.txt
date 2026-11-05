@@ -1,0 +1,21 @@
+This fictional label lists twelve grams of carbohydrate per thirty gram serving. Start with that reference amount.
+
+The portion shown weighs sixty grams. Dividing sixty by thirty gives two label servings, not one.
+
+Each serving has twelve grams of carbohydrate. Two equal servings contain twice that amount.
+
+Twelve grams per serving. How much in two servings? Choose now.
+
+Twelve times two equals twenty four grams. These invented numbers explain the method, not a particular food.
+
+Serving size is not a recommendation. Check for per serving, per package, or per hundred grams.
+
+Checkpoint: 12 g carbohydrate per 30 g serving: how much is in a 60 g portion?
+- 12 g 12 g is for one 30 g serving. This 60 g portion contains two servings.
+- 24 g Correct: 60 ÷ 30 = 2 servings, then 12 × 2 = 24 g carbohydrate. This is label arithmetic, not a glucose prediction.
+- 60 g 60 g is the whole food's mass, not its carbohydrate amount. Multiply the carbohydrate per serving by two.
+
+Sources:
+https://www.fda.gov/food/nutrition-facts-label/how-understand-and-use-nutrition-facts-label
+
+General education. No individual treatment advice or clinician signoff. Synthetic local Windows SAPI narration.

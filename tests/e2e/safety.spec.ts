@@ -1,0 +1,17 @@
+import { test, expect } from '@playwright/test';
+test('uncertain read-back cannot acknowledge; explicit current-plan answer can',async({page})=>{
+  await page.goto('/');await page.getByRole('button',{name:'Explore the working demo'}).click();await expect(page.getByRole('heading',{name:'Hello, Meena.'})).toBeVisible();
+  await page.getByRole('combobox',{name:'Demo role'}).selectOption('professional');
+  await page.getByRole('button',{name:'Review & document'}).click();await page.getByRole('combobox',{name:'Review status'}).selectOption('resolved');await page.getByRole('textbox',{name:'Review note'}).fill('Fictional source discrepancy discussed.');await page.getByRole('button',{name:'Save review note'}).click();
+  await page.getByRole('button',{name:'Publish demo plan note'}).click();await page.getByRole('textbox',{name:'Handover note'}).fill('This is a fictional read-back test, not a treatment instruction.');await page.getByRole('checkbox').check();await page.getByRole('button',{name:'Publish new demo version'}).click();
+  await page.getByRole('combobox',{name:'Demo role'}).selectOption('patient');await page.getByRole('navigation',{name:'Main navigation',exact:true}).getByRole('button',{name:'Medicines',exact:true}).click();await page.getByRole('button',{name:'Read back & acknowledge'}).click();await page.getByRole('combobox',{name:'Which plan is documented as current?'}).selectOption('unsure');await page.getByRole('checkbox').check();await page.getByRole('button',{name:'Acknowledge demo plan'}).click();await expect(page.getByRole('dialog')).toBeVisible();await expect(page.getByRole('status')).toContainText('acknowledgement was not recorded');
+  await page.getByRole('combobox',{name:'Which plan is documented as current?'}).selectOption('current');await page.getByRole('button',{name:'Acknowledge demo plan'}).click();await expect(page.getByRole('dialog')).not.toBeVisible();await expect(page.getByText('Acknowledged',{exact:true})).toBeVisible();
+});
+
+test('patient can reset and permanently delete their demo',async({page})=>{
+  await page.goto('/');await page.getByRole('button',{name:'Explore the working demo'}).click();await page.getByRole('button',{name:'Settings & privacy'}).click();
+  await page.getByRole('textbox',{name:'First name · fictional only'}).fill('Anita');await page.getByRole('button',{name:'Save preferences'}).click();await expect(page.getByRole('status')).toContainText('Saved');
+  await page.getByRole('button',{name:'Reset the demo scenario'}).click();await page.getByRole('textbox',{name:'Type RESET to confirm'}).fill('RESET');await page.getByRole('button',{name:'Confirm',exact:true}).click();await expect(page.getByRole('dialog')).not.toBeVisible();
+  await page.getByRole('navigation',{name:'Main navigation',exact:true}).getByRole('button',{name:'Today',exact:true}).click();await expect(page.getByRole('heading',{name:'Hello, Meena.'})).toBeVisible();
+  await page.getByRole('button',{name:'Settings & privacy'}).click();await page.getByRole('button',{name:'Delete demo & leave'}).click();await page.getByRole('textbox',{name:'Type DELETE to confirm'}).fill('DELETE');await page.getByRole('button',{name:'Confirm',exact:true}).click();await expect(page.getByRole('button',{name:'Explore the working demo'})).toBeVisible();
+});

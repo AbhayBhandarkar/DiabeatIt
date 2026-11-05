@@ -1,0 +1,36 @@
+import { describe, it, expect } from 'vitest';
+import { seed } from '../shared/seed';
+import { actionSchema, reduceState, visibleState, mgdl, indiaDate, type Action, type Role } from '../shared/domain';
+const now = new Date('2026-11-03T10:00:00Z');
+const glucose: Action = { type:'glucose.add',value:132,unit:'mg/dL',measuredAt:'2026-11-03T09:00:00Z',context:'Fasting' };
+describe('safe recording domain',()=>{
+  it('converts units without changing original representation',()=>expect(mgdl({value:7,unit:'mmol/L'})).toBeCloseTo(126.1274));
+  it('uses India day boundaries',()=>expect(indiaDate(new Date('2026-11-03T20:00:00Z'))).toBe('2026-11-04'));
+  it('records manual source and author',()=>{const s=reduceState(seed(now),'patient',glucose,now);expect(s.glucose[0]).toMatchObject({value:132,source:'Manual entry',author:'Meena · patient'});});
+  it('does not mutate prior state',()=>{const s=seed(now);reduceState(s,'patient',glucose,now);expect(s.glucose).toHaveLength(7);});
+  it.each([0,-1,19,601,Infinity,NaN])('rejects invalid mg/dL %s',value=>expect(()=>reduceState(seed(now),'patient',{...glucose,value},now)).toThrow());
+  it('rejects future measurements',()=>expect(()=>reduceState(seed(now),'patient',{...glucose,measuredAt:'2027-01-01T00:00:00Z'},now)).toThrow(/future/));
+  it('does not treat mg/dL as mmol/L',()=>expect(()=>reduceState(seed(now),'patient',{...glucose,unit:'mmol/L'},now)).toThrow(/unit/));
+  it('keeps distinct units',()=>expect(reduceState(seed(now),'patient',{...glucose,value:7.2,unit:'mmol/L'},now).glucose[0].unit).toBe('mmol/L'));
+  it('does not duplicate same scheduled occurrence',()=>{const a:Action={type:'intake.record',medicineId:'met',date:indiaDate(now),status:'taken',reason:''};const s=reduceState(seed(now),'patient',a,now);const next=reduceState(s,'patient',a,now);expect(next.intakes).toHaveLength(1);expect(next.audit).toHaveLength(3);});
+  it('preserves an uncertainty report without dose advice',()=>{const s=reduceState(seed(now),'patient',{type:'intake.record',medicineId:'met',date:indiaDate(now),status:'unsure',reason:''},now);expect(s.intakes[0].status).toBe('unsure');expect(s.medicines).toEqual(seed(now).medicines);});
+  it('rejects unknown scheduled medicine',()=>expect(()=>reduceState(seed(now),'patient',{type:'intake.record',medicineId:'missing',date:indiaDate(now),status:'taken',reason:''},now)).toThrow(/active/));
+  it('rejects another day intake',()=>expect(()=>reduceState(seed(now),'patient',{type:'intake.record',medicineId:'met',date:'2026-10-01',status:'taken',reason:''},now)).toThrow(/today/));
+  it('does not allow publishing with unresolved concerns',()=>expect(()=>reduceState(seed(now),'professional',{type:'plan.publish',note:'Demo note'},now)).toThrow(/Resolve/));
+  it('allows review then publication with acknowledgement reset',()=>{const s=reduceState(seed(now),'professional',{type:'review.update',id:'overlap',status:'resolved',note:'Fictional records clarified.'},now);const p=reduceState(s,'professional',{type:'plan.publish',note:'Demo handover only.'},now);expect(p.plan.version).toBe(2);expect(p.plan.acknowledged).toBe(false);expect(p.medicines).toEqual(s.medicines);});
+  it('makes resolved reviews immutable',()=>{const s=reduceState(seed(now),'professional',{type:'review.update',id:'overlap',status:'resolved',note:'Done'},now);expect(()=>reduceState(s,'professional',{type:'review.update',id:'overlap',status:'reviewing',note:'Overwrite'},now)).toThrow(/immutable/);});
+  it('retains separate learning completion without duplicates',()=>{const a:Action={type:'lesson.complete',id:'rice'};const s=reduceState(reduceState(seed(now),'patient',a,now),'patient',a,now);expect(s.completedLessons).toEqual(['rice']);});
+  it('validates portion limits',()=>expect(()=>actionSchema.parse({type:'meal.add',foodId:'rice',portions:99,meal:'Lunch',at:now.toISOString()})).toThrow());
+});
+describe('role and consent boundaries',()=>{
+  it.each(['companion','patient'] as Role[])('%s cannot resolve clinical review',role=>expect(()=>reduceState(seed(now),role,{type:'review.update',id:'overlap',status:'resolved',note:'Unauthorized'},now)).toThrow(/reviewer/));
+  it('reviewer cannot write intake reports',()=>expect(()=>reduceState(seed(now),'professional',glucose,now)).toThrow(/limited/));
+  it('companion cannot alter consent',()=>expect(()=>reduceState(seed(now),'companion',{type:'permissions.update',active:true,glucose:true,medicines:true,meals:true,documents:true},now)).toThrow(/not shared/));
+  it('revoked companion cannot read',()=>{const s=seed(now);s.permissions.active=false;expect(()=>visibleState(s,'companion')).toThrow(/revoked/);});
+  it('revoked companion cannot write',()=>{const s=seed(now);s.permissions.active=false;expect(()=>reduceState(s,'companion',glucose,now)).toThrow(/revoked/);});
+  it('hidden glucose is actually removed from serialized response',()=>{const s=seed(now);s.permissions.glucose=false;expect(visibleState(s,'companion').glucose).toEqual([]);});
+  it('hidden medicine data includes plan and reviews',()=>{const s=seed(now);s.permissions.medicines=false;const v=visibleState(s,'companion');expect(v.medicines).toEqual([]);expect(v.reviews).toEqual([]);expect(v.plan.note).toBe('Not shared');});
+  it('companion cannot read audit or private questions',()=>{const v=visibleState(seed(now),'companion');expect(v.audit).toEqual([]);expect(v.questions).toEqual([]);});
+  it('permission denial applies to writes',()=>{const s=seed(now);s.permissions.glucose=false;expect(()=>reduceState(s,'companion',glucose,now)).toThrow(/not shared/);});
+  it('patient retains access after companion revocation',()=>{const s=seed(now);s.permissions.active=false;expect(visibleState(s,'patient').glucose.length).toBe(7);});
+});

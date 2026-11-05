@@ -1,0 +1,73 @@
+{
+  "generatedAt": "2026-11-04T07:48:37.566520+00:00",
+  "python": "3.14.6",
+  "manim": "0.22.0",
+  "ffmpeg": "ffmpeg version 7.1-essentials_build-www.gyan.dev Copyright (c) 2000-2024 the FFmpeg developers",
+  "narration": "Local Windows SAPI; no external TTS service",
+  "lessons": [
+    {
+      "id": "ingredient-overlap",
+      "durationSeconds": 48.0,
+      "decodedFrames": 1152,
+      "width": 1280,
+      "height": 720,
+      "fps": 24,
+      "videoCodec": "h264",
+      "pixelFormat": "yuv420p",
+      "audioCodec": "aac",
+      "decodedAudioSamples": 1058400,
+      "fullDecodePassed": true,
+      "distinctChapterFrames": 6,
+      "bytes": 1374983,
+      "sha256": "9262ba37b0784710a76c97eff2dc5d29fe5992cca1c6f6f38d68d4acbeafba58"
+    },
+    {
+      "id": "label-portions",
+      "durationSeconds": 48.0,
+      "decodedFrames": 1152,
+      "width": 1280,
+      "height": 720,
+      "fps": 24,
+      "videoCodec": "h264",
+      "pixelFormat": "yuv420p",
+      "audioCodec": "aac",
+      "decodedAudioSamples": 1058400,
+      "fullDecodePassed": true,
+      "distinctChapterFrames": 6,
+      "bytes": 1421854,
+      "sha256": "76aa2b206762971a4e697c02e1235ca032513166dbd22ce3de5e92301db55546"
+    },
+    {
+      "id": "uncertain-intake",
+      "durationSeconds": 48.0,
+      "decodedFrames": 1152,
+      "width": 1280,
+      "height": 720,
+      "fps": 24,
+      "videoCodec": "h264",
+      "pixelFormat": "yuv420p",
+      "audioCodec": "aac",
+      "decodedAudioSamples": 1058400,
+      "fullDecodePassed": true,
+      "distinctChapterFrames": 6,
+      "bytes": 1308250,
+      "sha256": "631e5ab3e50f9c8f06a49a0aaec32e54cd13f8648b7458df725a6f4d04b3d088"
+    },
+    {
+      "id": "glucose-journey",
+      "durationSeconds": 48.0,
+      "decodedFrames": 1152,
+      "width": 1280,
+      "height": 720,
+      "fps": 24,
+      "videoCodec": "h264",
+      "pixelFormat": "yuv420p",
+      "audioCodec": "aac",
+      "decodedAudioSamples": 1058400,
+      "fullDecodePassed": true,
+      "distinctChapterFrames": 6,
+      "bytes": 1490013,
+      "sha256": "52a76b66f7e4e5aa8b2be48e9365297ef94cf9b2bb8919acf81652ef309821a9"
+    }
+  ]
+}

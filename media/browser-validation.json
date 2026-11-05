@@ -1,0 +1,92 @@
+{
+  "testedAt": "2026-11-03T11:25:06.346Z",
+  "browser": "156.0.8078.4",
+  "base": "http://127.0.0.1:5181",
+  "lessons": [
+    {
+      "id": "ingredient-overlap",
+      "duration": 48,
+      "width": 1280,
+      "height": 720,
+      "subtitleCues": 11,
+      "subtitleMode": "showing",
+      "assetResponses": 4,
+      "feedbackChoices": 3,
+      "naturalPlaybackPause": true,
+      "resume": true,
+      "seekGuard": true,
+      "replay": true,
+      "restartReset": true,
+      "rangeRequests": true,
+      "invalidRangeRejected": true,
+      "keyboardAnswer": true,
+      "axeViolations": 0,
+      "sha256Verified": true
+    },
+    {
+      "id": "label-portions",
+      "duration": 48,
+      "width": 1280,
+      "height": 720,
+      "subtitleCues": 12,
+      "subtitleMode": "showing",
+      "assetResponses": 4,
+      "feedbackChoices": 3,
+      "naturalPlaybackPause": true,
+      "resume": true,
+      "seekGuard": true,
+      "replay": true,
+      "restartReset": true,
+      "rangeRequests": true,
+      "invalidRangeRejected": true,
+      "keyboardAnswer": true,
+      "axeViolations": 0,
+      "sha256Verified": true
+    },
+    {
+      "id": "uncertain-intake",
+      "duration": 48,
+      "width": 1280,
+      "height": 720,
+      "subtitleCues": 12,
+      "subtitleMode": "showing",
+      "assetResponses": 4,
+      "feedbackChoices": 3,
+      "naturalPlaybackPause": true,
+      "resume": true,
+      "seekGuard": true,
+      "replay": true,
+      "restartReset": true,
+      "rangeRequests": true,
+      "invalidRangeRejected": true,
+      "keyboardAnswer": true,
+      "axeViolations": 0,
+      "sha256Verified": true
+    }
+  ],
+  "responsive": [
+    {
+      "width": 1440,
+      "horizontalOverflow": false
+    },
+    {
+      "width": 768,
+      "horizontalOverflow": false
+    },
+    {
+      "width": 390,
+      "horizontalOverflow": false
+    },
+    {
+      "width": 320,
+      "horizontalOverflow": false
+    }
+  ],
+  "mobileAxeViolations": 0,
+  "pageErrors": [],
+  "externalRequests": 0,
+  "caveats": [
+    "Chromium desktop automation; no physical mobile or screen-reader test.",
+    "Narration was not human-listened end to end."
+  ]
+}

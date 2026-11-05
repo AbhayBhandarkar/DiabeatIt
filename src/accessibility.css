@@ -1,0 +1,44 @@
+/* Final accessibility overrides: readable supporting copy and explicit dark-mode contrast. */
+:root { --muted: #59675f; }
+:root[data-theme=dark] { --muted: #b1bfb6; }
+:root[data-theme=dark] .button.danger { color: #ffb4a8; border-color: #aa7168; }
+.badge { font-size: .68rem; }
+.caption, .card-foot, .trust-footer { font-size: .78rem; }
+.medicine-row p, .intake-status, .food-row small { font-size: .8rem; }
+.row-title { font-size: 1rem; }
+.row-title .muted { font-size: .84rem; }
+.clarity-card p, .lesson-teaser p { font-size: .9rem; }
+.button.small, .text-button { font-size: .85rem; }
+.sidebar-caption, .sidebar-version, .eyebrow { font-size: .65rem; }
+.lesson-number { opacity: 1; color: var(--muted); }
+.page-title h1:focus { outline: none; }
+@media(max-width:760px) {
+  .app-body::before { content: 'HEALTHATHON DEMO · FICTIONAL RECORDS ONLY'; display: block; text-align: center; padding: 6px 12px; background: var(--mint); color: var(--primary); font-size: .58rem; font-weight: 700; letter-spacing: .07em; }
+  .hero-card>div:first-child { position: relative; z-index: 3; }
+  .caption, .card-foot { font-size: .76rem; }
+  .medicine-row { flex-wrap: wrap; }
+  .medicine-row .grow { flex-basis: calc(100% - 55px); }
+  .medicine-row .button { margin-left: 48px; min-height: 48px; font-size: .84rem; }
+  .medicine-row p, .intake-status { font-size: .8rem; }
+  .row-title { font-size: .98rem; }
+  .row-title .muted { font-size: .84rem; }
+  .food-row strong { font-size: .95rem; }
+  .food-row small, .food-macros { font-size: .76rem; }
+  .food-add { min-width: 44px; min-height: 44px; }
+  .bottom-nav button { font-size: .68rem; }
+  .lesson-card-body h2 { font-size: 1.18rem; }
+  .lesson-card-body p { font-size: .82rem; }
+  .notice { font-size: .84rem; }
+  .quick-actions>button>span:nth-child(2) { font-size: .8rem; }
+  .person-card p { font-size: .85rem; }
+  .glucose-summary>p { font-size: .75rem; }
+  .glucose-summary h2 { font-size: .9rem; }
+  .badge { font-size: .62rem; }
+  .connection strong { font-size: .86rem; }
+  .connection p { font-size: .75rem; }
+  .hero-card h2 { font-size: 1.8rem; }
+  .hero-card p { font-size: .85rem; }
+  .hero-card .hero-button { font-size: .78rem; }
+  .hero-illustration { min-width: 90px; }
+  .illustration-note { display: none; }
+}

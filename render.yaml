@@ -1,0 +1,39 @@
+# Render Blueprint: one free web service. PostgreSQL is hosted on Neon (DATABASE_URL).
+# Secrets use sync:false, so Render asks for them in the dashboard; they are never stored in git.
+services:
+  - type: web
+    name: diabeatit
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: "24"
+      - key: HOST
+        value: 0.0.0.0
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: SCHEMA_READY
+        value: "true"
+      - key: AI_PROVIDER
+        value: groq
+      - key: AI_TEXT_MODEL
+        value: qwen/qwen3.8-27b
+      - key: AI_VISION_MODEL
+        value: qwen/qwen3.8-27b
+      - key: AI_FALLBACK_TEXT_MODEL
+        value: openai/gpt-oss-20b
+      - key: APP_ORIGIN
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: FDC_API_KEY
+        sync: false

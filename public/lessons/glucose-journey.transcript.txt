@@ -1,0 +1,23 @@
+Digestion releases glucose into blood. The liver can also supply glucose.
+
+The pancreas makes insulin, a hormone. This diagram is not to scale.
+
+Blood carries glucose and insulin. Insulin signalling helps muscle cells take up glucose.
+
+What does insulin help the body do? Pause and choose in the player.
+
+In type two diabetes, cells respond less well. Insulin may also be insufficient.
+
+Discuss patterns with your care team. This diagram cannot choose medicine doses.
+
+Checkpoint: What role does insulin have in this diagram?
+- It helps signal glucose uptake into cells. Yes. Insulin is a hormone that helps the body use and store glucose. The drawing is a simplified process, not a personal prediction.
+- It removes all carbohydrate from food. Digestion breaks down carbohydrate. Insulin is a hormone involved in how the body handles glucose, not a way to remove carbohydrate from a meal.
+- It tells the app which dose to choose. This explanation cannot determine a medicine dose. Your treating professional guides treatment.
+
+Sources:
+https://www.niddk.nih.gov/health-information/diabetes/overview/what-is-diabetes
+https://www.niddk.nih.gov/health-information/digestive-diseases/digestive-system-how-it-works
+https://www.niddk.nih.gov/health-information/diabetes/overview/what-is-diabetes/prediabetes-insulin-resistance
+
+General education. No individual treatment advice or clinician signoff. Synthetic local Windows SAPI narration.

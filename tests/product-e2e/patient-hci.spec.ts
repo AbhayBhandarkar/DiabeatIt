@@ -1,0 +1,25 @@
+import {test,expect,navigate} from './fixtures';
+import AxeBuilder from '@axe-core/playwright';
+test('simple care, camera privacy, cookbook and source-led biology',async({page},testInfo)=>{
+ await page.goto('/');await navigate(page,'Care circle');await expect(page.locator('main h1')).toHaveText('People & access');await expect(page.getByRole('button',{name:'Add task',exact:true})).toHaveCount(0);
+ await navigate(page,'Food');await expect(page.getByRole('button',{name:'Take a meal photo'})).toBeVisible();await expect(page.getByRole('button',{name:'Build recipe',exact:true})).toHaveCount(0);
+ await page.route('**/api/v2/ai/capabilities',r=>r.fulfill({json:{foodVision:false,features:{foodPhoto:false}}}));await page.getByRole('button',{name:'Take a meal photo'}).click();await expect(page.getByRole('dialog')).toContainText('Your photo stays on this device');await page.getByRole('button',{name:'Close dialog'}).click();
+ await page.getByRole('button',{name:'What to cook',exact:true}).click();
+ await expect(page.locator('.cookbook-card img')).toHaveCount(4);
+ await expect.poll(()=>page.locator('.cookbook-card img').evaluateAll(imgs=>imgs.every(i=>(i as HTMLImageElement).complete&&(i as HTMLImageElement).naturalWidth>0))).toBe(true);
+ await expect(page.locator('.cookbook-card').first()).toContainText('CC BY-SA 4.0');
+ await page.getByRole('button',{name:'What to cook',exact:true}).hover();
+ expect((await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze()).violations).toEqual([]);
+ await page.screenshot({path:`test-results/recipe-photos-${testInfo.project.name}.png`,fullPage:true});
+ await page.getByRole('button',{name:'See recipe'}).first().click();await expect(page.getByRole('dialog')).toContainText('What you’ll need');await expect(page.getByRole('dialog')).toContainText('Not a photograph of the exact');await page.getByRole('button',{name:'Close dialog'}).click();
+ await navigate(page,'Learn');await expect(page.getByRole('img',{name:'Digestion, pancreas, bloodstream and a muscle cell'})).toBeVisible();await page.getByRole('button',{name:'Next',exact:true}).click();await expect(page.locator('.biology-caption')).toContainText('The pancreas makes insulin.');await page.getByText('Why this matters & the source',{exact:true}).click();await expect(page.getByRole('link',{name:'NIDDK · source for this step'})).toHaveAttribute('href',/niddk.nih.gov/);
+ await expect(page.getByText('Earlier short video lessons · captions and transcripts',{exact:true})).toHaveCount(0);
+ await expect(page.getByRole('heading',{name:'From your meal to your muscle cells',exact:true})).toBeVisible();
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ const result=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze();expect(result.violations).toEqual([]);
+ await page.screenshot({path:`test-results/hci-${testInfo.project.name}-biology.png`,fullPage:true});
+ await navigate(page,'Settings & privacy');await page.getByRole('button',{name:'Dark',exact:true}).click();
+ await page.getByRole('button',{name:'Change password',exact:true}).hover();
+ const hover=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze();expect(hover.violations).toEqual([]);
+ await page.screenshot({path:`test-results/hci-${testInfo.project.name}-dark-hover.png`,fullPage:true});
+});

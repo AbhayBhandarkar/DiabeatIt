@@ -1,0 +1,31 @@
+import { useState } from 'react';
+import { ArrowRight, ArrowUpRight, Droplet, CalendarDays, ShieldCheck, Sparkles, CheckCircle2, Clock3 } from 'lucide-react';
+import { useApp, formatDate, formatTime } from './api';
+import { Badge, SectionHeading, Mitra, GlucoseChart, GlucoseForm, QuickActions, MedicineRow, Notice, Empty } from './components';
+import { indiaDate } from '../shared/domain';
+export default function Today() {
+  const { state, navigate, role, act } = useApp(); const [add, setAdd] = useState(false); const [history, setHistory] = useState(false);
+  const last = [...state.glucose].sort((a,b) => Date.parse(b.measuredAt)-Date.parse(a.measuredAt))[0];
+  const recorded = state.intakes.filter(i => i.date === indiaDate()).length;
+  const pending = state.reviews.filter(r => r.status !== 'resolved').length;
+  const ageHours = last ? Math.max(0, Math.floor((Date.now()-Date.parse(last.measuredAt))/3600000)) : 0;
+  return <>
+    <div className="page-title"><div><p className="eyebrow">YOUR EVERYDAY, A LITTLE CLEARER</p><h1>{state.profile.language === 'hi' ? `नमस्ते, ${state.profile.name}` : role === 'companion' ? `Here for ${state.profile.name}.` : `Hello, ${state.profile.name}.`} <span className="greeting-dot"/></h1><p>Small steps. Shared support. A routine that feels like yours.</p></div><span className="date-pill"><CalendarDays size={17}/>{new Date().toLocaleDateString('en-IN',{ day:'numeric',month:'short',weekday:'short',timeZone:'Asia/Kolkata' })}</span></div>
+    <div className="today-grid">
+      <section className="hero-card"><div><Badge tone="light"><span className="status-dot"/> TOGETHER IN CARE</Badge><h2>You don’t have to<br/>keep track alone.</h2><p>Your routine, your family, and the questions<br className="desktop-only"/> that matter—all in one place.</p><button className="button hero-button" onClick={() => navigate('care')}>Meet your care circle<ArrowUpRight size={18}/></button></div><div className="hero-illustration"><span className="orbit orbit-one"/><span className="orbit orbit-two"/><Mitra/><span className="illustration-note"><HeartMark/> A little help goes a long way</span></div></section>
+      <section className="card glucose-summary"><div className="between"><span className="icon-tile mint"><Droplet size={21}/></span><Badge>{last?.source === 'Manual entry' ? 'MANUAL ENTRY' : 'DEMO READING'}</Badge></div><h2>Last glucose reading</h2>{last ? <><div className="reading">{last.value}<span>{last.unit}</span></div><p className="muted">{last.context} · {formatDate(last.measuredAt)}, {formatTime(last.measuredAt)} IST</p><p className="caption">Measured {ageHours < 1 ? 'less than an hour' : `${ageHours} hours`} ago · not a live feed</p></> : <p>No readings shared yet.</p>}<button className="text-button" onClick={() => setAdd(true)}>Add a reading<PlusMark/></button></section>
+    </div>
+    <QuickActions onGlucose={() => setAdd(true)}/>
+    <div className="content-grid"><div className="main-column">
+      <section className="card"><SectionHeading eyebrow="ONE THING AT A TIME" title="Your daily routine"><Badge>{recorded} of {state.medicines.length} recorded</Badge></SectionHeading>{state.medicines.map(m => <MedicineRow key={m.id} medicine={m}/>)}{!state.medicines.length && <Empty title="No medicines shared">The patient controls which records companions can view.</Empty>}<div className="card-foot"><Clock3 size={15}/> Scheduled times use India time. Background reminders are not connected.</div></section>
+      <section className="card"><SectionHeading eyebrow="THE BIGGER PICTURE" title="Your glucose journal"><button className="text-button" onClick={() => setHistory(!history)}>{history ? 'Hide records' : 'View records'}<ArrowRight size={16}/></button></SectionHeading><GlucoseChart readings={state.glucose}/>{history && <div className="table-scroll"><table><caption>Recorded glucose observations</caption><thead><tr><th>Measured · IST</th><th>Reading</th><th>Source</th>{role === 'patient' && <th>Correction</th>}</tr></thead><tbody>{state.glucose.map(g => <tr key={g.id}><td>{formatDate(g.measuredAt)} {formatTime(g.measuredAt)}</td><td>{g.value} {g.unit}</td><td>{g.source}</td>{role === 'patient' && <td><button className="text-button" onClick={() => { if (confirm('Remove this incorrect reading? The correction remains in the audit history.')) void act({ type: 'glucose.delete', id: g.id }); }}>Remove</button></td>}</tr>)}</tbody></table></div>}</section>
+    </div><aside className="side-column">
+      <section className={`card clarity-card ${pending ? '' : 'clear'}`}><span className="icon-tile peach"><ShieldCheck/></span><Badge tone={pending ? 'amber' : 'green'}>{pending ? `${pending} NEEDS CLARIFICATION` : 'REVIEWS COMPLETE'}</Badge><h2>{pending ? 'Two prescriptions. Let’s make them clearer.' : 'A clearer picture, together.'}</h2><p>{pending ? 'A possible ingredient overlap is waiting for a fictional professional’s review. No medicines have been changed.' : 'Your demo reviews are resolved. Review the documented plan together.'}</p><button className="button secondary" onClick={() => navigate('medicines')}>Open Medication Clarity<ArrowRight size={17}/></button></section>
+      <section className="card lesson-teaser"><div className="between"><span className="eyebrow">A LITTLE UNDERSTANDING</span><Sparkles size={18}/></div><div className="rice-art" aria-hidden="true"><span/><i/><b/></div><h3>Rice is not the whole story.</h3><p>Portion, context, and a little less food guilt.</p><button className="text-button" onClick={() => navigate('learn')}>Explore the 2-minute lesson<ArrowRight size={16}/></button></section>
+    </aside></div>
+    {!state.plan.acknowledged && role === 'patient' && <Notice>A new fictional plan version is ready. <button className="text-button" onClick={() => navigate('medicines')}>Review and acknowledge version {state.plan.version}<ArrowRight size={16}/></button></Notice>}
+    {add && <GlucoseForm onClose={() => setAdd(false)}/>}
+  </>;
+}
+function HeartMark() { return <CheckCircle2 size={15}/>; }
+function PlusMark() { return <ArrowRight size={17}/>; }

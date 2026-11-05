@@ -1,0 +1,54 @@
+[
+  {
+    "id": "moong",
+    "src": "/recipes/moong.webp",
+    "title": "Moonglet chilla with curd and hot tea.jpg",
+    "author": "RekhaY07",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Moonglet_chilla_with_curd_and_hot_tea.jpg",
+    "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/a/aa/Moonglet_chilla_with_curd_and_hot_tea.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized, cropped to 10:7 and converted to WebP; metadata removed.",
+    "note": "Serving inspiration. Not a photograph of the exact authored recipe or a measured portion.",
+    "accessedOn": "2026-11-04"
+  },
+  {
+    "id": "oats",
+    "src": "/recipes/oats.webp",
+    "title": "Oats Upma...yummy.jpg",
+    "author": "vrk1219",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Oats_Upma...yummy.jpg",
+    "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c6/Oats_Upma...yummy.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized, cropped to 10:7 and converted to WebP; metadata removed.",
+    "note": "Serving inspiration. Not a photograph of the exact authored recipe or a measured portion.",
+    "accessedOn": "2026-11-04"
+  },
+  {
+    "id": "chana",
+    "src": "/recipes/chana.webp",
+    "title": "Hummus salad.jpg",
+    "author": "Canbel",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Hummus_salad.jpg",
+    "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/f/fe/Hummus_salad.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized, cropped to 10:7 and converted to WebP; metadata removed.",
+    "note": "Serving inspiration. Not a photograph of the exact authored recipe or a measured portion.",
+    "accessedOn": "2026-11-04"
+  },
+  {
+    "id": "plate",
+    "src": "/recipes/plate.webp",
+    "title": "Vegetarian Thali.jpg",
+    "author": "PrashuKalyan",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "sourcePage": "https://commons.wikimedia.org/wiki/File:Vegetarian_Thali.jpg",
+    "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/5/55/Vegetarian_Thali.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+    "changes": "Resized, cropped to 10:7 and converted to WebP; metadata removed.",
+    "note": "Serving inspiration. Not a photograph of the exact authored recipe or a measured portion.",
+    "accessedOn": "2026-11-04"
+  }
+]

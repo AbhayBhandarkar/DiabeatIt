@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>DiabeatIT · Visual lessons</title>
+  <link rel="stylesheet" href="./player.css">
+  <script src="./player.js" type="module"></script>
+</head>
+<body>
+  <main>
+    <header><span class="eyebrow">DIABEATIT / THE VISUAL SERIES</span><h1>Small lessons.<br><em>Clearer questions.</em></h1><p>Three animated lessons. One thoughtful pause in each.</p></header>
+    <nav id="lessons" aria-label="Choose a lesson"></nav>
+    <section aria-labelledby="title" class="lesson">
+      <div class="lesson-heading"><div><span id="category" class="eyebrow"></span><h2 id="title">Loading lessons…</h2></div><span class="badge">MANIM · 48 SECONDS</span></div>
+      <p id="summary"></p>
+      <video id="video" controls playsinline preload="metadata" aria-label="Animated educational lesson"></video>
+      <p id="status" role="status">The video pauses for a checkpoint at 00:31. Captions are available in the video controls.</p>
+      <section id="checkpoint" hidden aria-labelledby="question" tabindex="-1">
+        <span class="eyebrow">PAUSE / REFLECT / CONTINUE</span><h3 id="question"></h3>
+        <div id="choices" role="group" aria-label="Checkpoint answers"></div>
+        <p id="feedback" role="status"></p>
+        <div class="actions"><button id="continue" disabled>Continue lesson</button><button id="replay" class="secondary">Replay question</button></div>
+      </section>
+      <div class="actions"><button id="restart" class="secondary">Restart + reset checkpoint</button><a id="transcript">Read transcript + answer explanations</a><a id="download" download>Download MP4</a></div>
+      <details><summary>Sources & production transparency</summary><p>Original Manim animation; fictional examples. Narration is synthetic, generated offline with Microsoft Zira (Windows SAPI). No external TTS service, microphone, analytics, or health-data collection. Subtitle phrase timings are approximate.</p><ul id="sources"></ul><p>General education only. Not individual treatment advice. These lessons have not been clinically reviewed and do not carry clinician signoff. US label guidance is not a local label-format specification.</p></details>
+    </section>
+    <footer>Independent lesson preview — not connected to medicine records or the main application.</footer>
+    <noscript>JavaScript is needed for timed checkpoints. The MP4s, subtitles, and transcripts can be opened separately.</noscript>
+  </main>
+</body>
+</html>

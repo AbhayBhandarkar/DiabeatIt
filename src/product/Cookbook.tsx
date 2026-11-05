@@ -1,0 +1,14 @@
+import { useEffect, useState } from 'react';
+import { Volume2, Square, Clock, ArrowRight } from 'lucide-react';
+import { cookbook } from '../../shared/cookbook';
+import { recipePhotos } from '../../shared/recipePhotos';
+import RecipePhoto from './RecipePhoto';
+import { Dialog } from './ui';
+export default function Cookbook(){
+ const [recipe,setRecipe]=useState<typeof cookbook[number]|null>(null);const [speaking,setSpeaking]=useState(false);
+ useEffect(()=>()=>{if('speechSynthesis'in window)speechSynthesis.cancel();},[]);
+ function stop(){if('speechSynthesis'in window)speechSynthesis.cancel();setSpeaking(false);}
+ return <section className="stack"><div><p className="eyebrow">FAMILIAR INGREDIENTS. SOMETHING TO LOOK FORWARD TO.</p><h2>Something good to cook.</h2><p className="muted">Choose a dish, hear the steps, and make it your own. Photographs show serving ideas—not measured portions.</p></div>
+ <div className="cookbook-grid">{cookbook.map(r=><article className="cookbook-card" key={r.id}><RecipePhoto id={r.id}/><div className="cookbook-body"><span className="chip">{r.tag}</span><h3>{r.name}</h3><p className="muted"><Clock size={16}/> {r.time} · serves {r.serves}</p><button className="btn secondary" onClick={()=>setRecipe(r)}>See recipe<ArrowRight size={18}/></button></div></article>)}</div>
+ {recipe&&<Dialog title={recipe.name} onClose={()=>{stop();setRecipe(null);}}><div className="stack"><RecipePhoto id={recipe.id} detailed/><p>{recipe.time} · serves {recipe.serves}</p>{'speechSynthesis'in window&&<button className="btn secondary" onClick={()=>{if(speaking){stop();return;}const u=new SpeechSynthesisUtterance([recipe.name,'Ingredients',...recipe.ingredients,'Preparation',...recipe.steps].join('. '));u.lang='en-IN';u.rate=.85;u.onend=()=>setSpeaking(false);u.onerror=()=>setSpeaking(false);speechSynthesis.speak(u);setSpeaking(true);}}>{speaking?<Square size={18}/>:<Volume2 size={18}/>} {speaking?'Stop reading':'Read recipe aloud'}</button>}<h3>What you’ll need</h3><ul>{recipe.ingredients.map(i=><li key={i}>{i}</li>)}</ul><h3>How to make it</h3><ol className="recipe-steps">{recipe.steps.map(s=><li key={s}>{s}</li>)}</ol><p>{recipe.note}</p><details><summary>Sources & recipe notes</summary><p>Original cooking suggestion, not a clinically validated recipe. No precise nutrients are claimed. The linked guidance supports general food/portion principles, not endorsement of this exact recipe. Check allergies and your individual needs.</p><a href={recipe.source} target="_blank" rel="noreferrer">Read the nutrition guidance</a><p>Read-aloud uses your device’s synthetic voice. Voice availability varies.</p></details></div></Dialog>}</section>;
+}

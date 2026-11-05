@@ -1,0 +1,27 @@
+/* Patient-facing blue/ink palette. Loaded last: all interaction states use explicit pairs. */
+:root { --p-primary:#284da5; --p-primary-hover:#1d3d89; --p-cyan:#456cc0; --p-cyan-soft:#eaf0ff; --p-soft:#f0f3fa; --p-sidebar:#142039; --p-sidebar-active:#293d62; --p-sidebar-muted:#d1daeb; --p-control-border:#8292ae; --p-bg:#f7f8fc; }
+:root[data-theme=dark] { --p-primary:#bdcfff; --p-primary-hover:#d8e3ff; --p-cyan:#afc6ff; --p-cyan-soft:#233556; --p-soft:#222e44; --p-sidebar:#10192c; --p-sidebar-active:#2b3f65; --p-sidebar-muted:#d7e1f5; --p-bg:#131b2b; --p-surface:#1b263b; --p-text:#f1f4ff; --p-muted:#c0cbe0; --p-border:#3d4d69; --p-control-border:#7284a6; }
+.product-shell .home-banner { background:#243b69; }
+.product-auth .auth-aside { background:#18294b; }
+.product-shell .home-banner .btn.primary { color:#18294b; background:#e6edff; border-color:#e6edff; }
+.quick-foods { display:flex; gap:.65rem; flex-wrap:wrap; }
+.meal-photo { width:100%; max-height:260px; object-fit:contain; border-radius:16px; background:var(--p-soft); }
+.recipe-card { border-top:4px solid var(--p-primary); }
+.cookbook-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.5rem}.cookbook-card{overflow:hidden;border:1px solid var(--p-border);border-radius:20px;background:var(--p-surface)}.cookbook-body{padding:1.3rem}.cookbook-body h3{margin:.8rem 0;font-size:1.45rem}.recipe-figure{margin:0}.recipe-figure img{width:100%;height:auto;aspect-ratio:10/7;object-fit:cover;display:block}.recipe-figure figcaption{font-size:.8rem;line-height:1.6;color:var(--p-muted);padding:.7rem 1rem}.recipe-figure a{color:var(--p-primary);text-decoration:underline}.recipe-steps li{padding-left:.5rem}.recipe-steps li::marker{font-weight:700;color:var(--p-primary)}
+@media(max-width:600px){.cookbook-grid{grid-template-columns:1fr}}
+.modal-dialog li { margin:.65rem 0; line-height:1.7; }
+:root[data-theme=dark] :is(.product-shell,.product-auth,.modal-dialog) .btn.primary { background:#bdcfff; color:#15233d; border-color:#bdcfff; }
+@media(hover:hover) {
+ .product-shell .tabs .btn.primary:hover:not(:disabled) { background:#1d3d89; color:#ffffff; border-color:#1d3d89; }
+ :root[data-theme=dark] .product-shell .tabs .btn.primary:hover:not(:disabled) { background:#dce6ff; color:#101e37; border-color:#dce6ff; }
+ :is(.product-shell,.product-auth,.modal-dialog) :is(.btn.secondary,.btn.ghost,.icon-btn):hover:not(:disabled) { background:#e0e8fc; color:#173569; border-color:#637da9; }
+ :root[data-theme=dark] :is(.product-shell,.product-auth,.modal-dialog) :is(.btn.secondary,.btn.ghost,.icon-btn):hover:not(:disabled) { background:#3b5076; color:#ffffff; border-color:#b6cafa; }
+ :root[data-theme=dark] :is(.product-shell,.product-auth,.modal-dialog) .btn.primary:hover:not(:disabled) { background:#dce6ff; color:#101e37; border-color:#dce6ff; }
+ .product-shell .product-sidebar-bottom>.btn.ghost:hover:not(:disabled),.product-nav button:hover { background:#354b75; color:#ffffff; border-color:#a7bee9; }
+}
+.product-shell .sidebar-principle { display:none; }
+.home-columns>aside>section:last-child { display:none; }
+.product-skip:not(:focus) { width:1px; height:1px; padding:0; overflow:hidden; clip-path:inset(50%); }
+.product-shell .home-welcome h1 { font-size:clamp(1.9rem,4vw,2.8rem); }
+.product-shell .notice { font-size:.95rem; }
+@media(max-width:760px){ .product-shell .home-summary { grid-template-columns:1fr; } .quick-foods .btn { flex:1 0 26%; } }

@@ -1,0 +1,35 @@
+name: DiabeatIT checks
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      HOST: 127.0.0.1
+      PORT: '3001'
+      APP_ORIGIN: http://127.0.0.1:3001
+      COOKIE_SECURE: 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      # The video component tests also launch Chromium.
+      - run: npx playwright install --with-deps chromium
+      - run: npm test
+      - run: npm audit --audit-level=moderate
+      # Product config starts npm start and waits for /api/health (built dist).
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-test-results
+          path: test-results/
+          retention-days: 7

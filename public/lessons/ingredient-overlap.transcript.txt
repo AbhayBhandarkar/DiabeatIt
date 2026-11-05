@@ -1,0 +1,22 @@
+Different medicine names can hide a shared active ingredient. These boxes are fictional, not real medicines.
+
+Read every ingredient. A combination product contains several. Both boxes list X.
+
+A shared ingredient flags possible overlap. It does not decide medicine changes.
+
+Both boxes list X. What does that tell you?
+
+Possible overlap needs a pharmacist or prescriber's clarification. This lesson cannot decide medicine changes.
+
+Bring packaging and prescriptions. Explain actual use. This is general education only.
+
+Checkpoint: Two different boxes both list ingredient X. What can you conclude?
+- Possible overlap; professional clarification needed. Yes. A shared ingredient is a review flag, not a decision to stop, combine, or change medicines.
+- Different brand names rule out overlap. Names alone do not rule out overlap. Compare all active ingredients and ask for professional clarification.
+- The two products must be interchangeable. A shared ingredient does not establish interchangeability. Strength, formulation, and instructions also matter.
+
+Sources:
+https://www.fda.gov/drugs/resources-you-drugs/drug-interactions-what-you-should-know
+https://www.ahrq.gov/patient-safety/settings/hospital/match/chapter-3.html
+
+General education. No individual treatment advice or clinician signoff. Synthetic local Windows SAPI narration.

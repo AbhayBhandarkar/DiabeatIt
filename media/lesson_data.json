@@ -1,0 +1,109 @@
+[
+  {
+    "id": "ingredient-overlap",
+    "title": "Different boxes. Shared ingredients?",
+    "category": "Medication clarity",
+    "summary": "See why differently named medicines can share an ingredient, and what to clarify with your pharmacist.",
+    "sourceIds": ["fda-interactions", "ahrq-match"],
+    "chapters": ["Look beyond the brand", "Read every active ingredient", "Spot a possible overlap", "Your checkpoint", "Clarify, do not change", "Bring the whole picture"],
+    "narration": [
+      "Different medicine names can hide a shared active ingredient. These boxes are fictional, not real medicines.",
+      "Read every ingredient. A combination product contains several. Both boxes list X.",
+      "A shared ingredient flags possible overlap. It does not decide medicine changes.",
+      "Both boxes list X. What does that tell you?",
+      "Possible overlap needs a pharmacist or prescriber's clarification. This lesson cannot decide medicine changes.",
+      "Bring packaging and prescriptions. Explain actual use. This is general education only."
+    ],
+    "checkpoint": {
+      "id": "overlap-check",
+      "atSeconds": 31,
+      "prompt": "Two different boxes both list ingredient X. What can you conclude?",
+      "choices": [
+        { "id": "review", "text": "Possible overlap; professional clarification needed.", "feedback": "Yes. A shared ingredient is a review flag, not a decision to stop, combine, or change medicines." },
+        { "id": "different", "text": "Different brand names rule out overlap.", "feedback": "Names alone do not rule out overlap. Compare all active ingredients and ask for professional clarification." },
+        { "id": "identical", "text": "The two products must be interchangeable.", "feedback": "A shared ingredient does not establish interchangeability. Strength, formulation, and instructions also matter." }
+      ],
+      "correctChoiceId": "review"
+    }
+  },
+  {
+    "id": "label-portions",
+    "title": "One label. How many servings?",
+    "category": "Food label literacy",
+    "summary": "Understand the difference between the amount on a label and the portion on your plate.",
+    "sourceIds": ["fda-label"],
+    "chapters": ["Find the reference amount", "Compare with your portion", "Scale the same nutrient", "Your checkpoint", "Reveal the arithmetic", "A reference, not a prescription"],
+    "narration": [
+      "This fictional label lists twelve grams of carbohydrate per thirty gram serving. Start with that reference amount.",
+      "The portion shown weighs sixty grams. Dividing sixty by thirty gives two label servings, not one.",
+      "Each serving has twelve grams of carbohydrate. Two equal servings contain twice that amount.",
+      "Twelve grams per serving. How much in two servings? Choose now.",
+      "Twelve times two equals twenty four grams. These invented numbers explain the method, not a particular food.",
+      "Serving size is not a recommendation. Check for per serving, per package, or per hundred grams."
+    ],
+    "checkpoint": {
+      "id": "portion-check",
+      "atSeconds": 31,
+      "prompt": "12 g carbohydrate per 30 g serving: how much is in a 60 g portion?",
+      "choices": [
+        { "id": "12", "text": "12 g", "feedback": "12 g is for one 30 g serving. This 60 g portion contains two servings." },
+        { "id": "24", "text": "24 g", "feedback": "Correct: 60 ÷ 30 = 2 servings, then 12 × 2 = 24 g carbohydrate. This is label arithmetic, not a glucose prediction." },
+        { "id": "60", "text": "60 g", "feedback": "60 g is the whole food's mass, not its carbohydrate amount. Multiply the carbohydrate per serving by two." }
+      ],
+      "correctChoiceId": "24"
+    }
+  },
+  {
+    "id": "uncertain-intake",
+    "title": "An empty log is not an answer.",
+    "category": "Medication records",
+    "summary": "What to do with an uncertain record—without guessing whether another dose is needed.",
+    "sourceIds": ["ahrq-match", "nhs-poisoning"],
+    "chapters": ["Separate reminder from event", "Keep the source visible", "Preserve uncertainty", "Your checkpoint", "Ask rather than infer", "Know the limits"],
+    "narration": [
+      "A reminder was sent, but the log is empty. That does not establish whether a medicine was taken.",
+      "Reminders, reports, and actual intake are different things. Keep the time and source of reports visible.",
+      "If memory and records disagree, preserve the uncertainty. An app entry is not proof that medicine was swallowed.",
+      "Checkpoint. No entry, and the person is unsure. What should the record say?",
+      "Record unsure, with source and time. Ask a pharmacist about uncertainty, not an app.",
+      "For suspected overdose or severe symptoms, seek urgent local medical help. Do not wait for an app review."
+    ],
+    "checkpoint": {
+      "id": "uncertainty-check",
+      "atSeconds": 31,
+      "prompt": "The log is empty and the person cannot remember. Which record is supported?",
+      "choices": [
+        { "id": "missed", "text": "Definitely missed", "feedback": "A missing entry does not prove a missed medicine. Keep the uncertainty visible." },
+        { "id": "taken", "text": "Definitely taken", "feedback": "There is not enough evidence to mark it taken. Preserve the person's uncertainty." },
+        { "id": "unsure", "text": "Unsure — include source and time", "feedback": "Yes. Record what is known without inventing certainty. Seek professional guidance, not an app-generated dose decision." }
+      ],
+      "correctChoiceId": "unsure"
+    }
+  },
+  {
+    "id": "glucose-journey",
+    "title": "From your meal to your muscle cells",
+    "category": "Understand your body",
+    "summary": "Follow digestion, the pancreas and insulin signalling through a labelled biological schematic.",
+    "sourceIds": ["niddk-diabetes", "niddk-digestion", "niddk-resistance"],
+    "chapters": ["Digestion releases glucose", "The pancreas makes insulin", "A signal helps cells", "A moment to reflect", "When the response is reduced", "The whole picture matters"],
+    "narration": [
+      "Digestion releases glucose into blood. The liver can also supply glucose.",
+      "The pancreas makes insulin, a hormone. This diagram is not to scale.",
+      "Blood carries glucose and insulin. Insulin signalling helps muscle cells take up glucose.",
+      "What does insulin help the body do? Pause and choose in the player.",
+      "In type two diabetes, cells respond less well. Insulin may also be insufficient.",
+      "Discuss patterns with your care team. This diagram cannot choose medicine doses."
+    ],
+    "checkpoint": {
+      "id": "insulin-role", "atSeconds": 31,
+      "prompt": "What role does insulin have in this diagram?",
+      "choices": [
+        {"id":"signal","text":"It helps signal glucose uptake into cells.","feedback":"Yes. Insulin is a hormone that helps the body use and store glucose. The drawing is a simplified process, not a personal prediction."},
+        {"id":"food","text":"It removes all carbohydrate from food.","feedback":"Digestion breaks down carbohydrate. Insulin is a hormone involved in how the body handles glucose, not a way to remove carbohydrate from a meal."},
+        {"id":"dose","text":"It tells the app which dose to choose.","feedback":"This explanation cannot determine a medicine dose. Your treating professional guides treatment."}
+      ],
+      "correctChoiceId":"signal"
+    }
+  }
+]
