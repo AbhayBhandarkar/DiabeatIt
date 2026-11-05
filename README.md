@@ -4,6 +4,7 @@
 Health-a-thon 2026 India · Web app (installable on iPhone and Android) · Node.js + React + PostgreSQL
 
 - **Live app:** https://diabeatit.onrender.com · **Website:** https://diabeatit.onrender.com/about
+- **Demo video (2 min, captioned):** https://diabeatit.onrender.com/demo/DiabeatIT-demo.webm · Submission decks: [docs/submission](docs/submission)
 - **Synthetic showcase login:** `sunita.sharma@example.com` / `Showcase-Sunita-2026!` (family companion: `priya.sharma@example.com` / `Showcase-Priya-2026!`)
 - The free host sleeps after 15 minutes idle; the first request can take about a minute to wake it.
 
@@ -263,7 +264,9 @@ Other tables: `v2_accounts` (scrypt hashes), `v2_sessions` (hashed tokens), `v2_
 3. Wait for the health check (`/api/health`), then optionally seed the showcase: `node scripts/seed-showcase.mjs https://diabeatit.onrender.com`.
 4. On iPhone: open the URL in Safari → Share → **Add to Home Screen**.
 
-Free-tier facts (checked 5 Nov 2026): Render free web services sleep after 15 min idle (~1 min cold start) and get 750 instance-hours/month; Neon Free is permanent with 0.5 GB… 1 GB storage per project, 100 CU-hours/month and scale-to-zero. Paid upgrade path: Render Starter + Neon Launch (≈ US$7 + usage per month).
+**Current deployment (5 Nov 2026):** Render service `diabeatit` (Singapore, free) auto-deploys from `main`. The database is a Neon *claimable* project (`tiny-mud-51973901`, Singapore) created without an account; it **expires on 8 Nov 2026 unless claimed**. To keep it: run `neon claim accept tiny-mud-51973901` on the machine that created it (or create a new Neon project and migrate), choose the organisation, then copy the new connection string into Render → Environment → `DATABASE_URL` (claiming rotates the password).
+
+Free-tier facts (checked 5 Nov 2026): Render free web services sleep after 15 min idle (~1 min cold start) and get 750 instance-hours/month; Neon Free is permanent with 1 GB storage per project, 100 CU-hours/month and scale-to-zero. Paid upgrade path: Render Starter + Neon Launch (≈ US$7 + usage per month).
 
 ## 10. Testing
 
@@ -273,6 +276,8 @@ npm run test:e2e      # Playwright: desktop 1440, phone 390 and 320 px, light/da
 node scripts/production-smoke.mjs
 node scripts/capture-screens.mjs <baseUrl>   # product screenshots → artifacts/screens
 node scripts/frame-screens.mjs               # iPhone-style frames → artifacts/framed
+node scripts/record-demo.mjs <baseUrl>       # captioned walkthrough → public/demo/DiabeatIT-demo.webm
+.venv/Scripts/python scripts/deck/build_deck.py   # both submission decks → docs/submission
 ```
 
 ## 11. Project layout

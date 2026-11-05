@@ -9,5 +9,5 @@ try {
   $h = [int]($Width * $pres.PageSetup.SlideHeight / $pres.PageSetup.SlideWidth)
   foreach ($s in $pres.Slides) { $s.Export((Join-Path $out ("slide{0:D2}.png" -f $s.SlideIndex)), 'PNG', $Width, $h) }
   "exported $($pres.Slides.Count) slides to $out"
-  $pres.Close()
+  try { $pres.Close() } catch { }
 } finally { $app.Quit() | Out-Null; [System.Runtime.InteropServices.Marshal]::ReleaseComObject($app) | Out-Null }
