@@ -4,12 +4,12 @@ import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
 import type { Database } from '../db';
 import type { Entity, User, MeResponse, RegisterResponse, ExportResponse } from '../../shared/v2';
-import { ApiError, idSchema, tokenSchema, registerSchema, loginSchema, changePasswordSchema, recoverSchema, deleteAccountSchema, createEntitySchema, updateEntitySchema, deleteEntitySchema, inviteSchema, acceptSchema, auditQuerySchema, validateData, validateJsonStructure } from './validation';
+import { ApiError, idSchema, tokenSchema, registerSchema, loginSchema, changePasswordSchema, recoverSchema, deleteAccountSchema, createEntitySchema, updateEntitySchema, deleteEntitySchema, inviteSchema, acceptSchema, auditQuerySchema, entityPageSchema, validateData, validateJsonStructure } from './validation';
 import { COOKIE, SESSION_MS, hashToken, newToken, hashPassword, verifyPassword, setSessionCookie, clearSessionCookie } from './security';
-import { initializeV2, spacesFor, accessSpace, snapshot, auditFor, writeEntity, writePermission } from './storage';
+import { initializeV2, spacesFor, accessSpace, snapshot, auditFor, writeEntity, writePermission, entityColumns, entityOut, iso } from './storage';
 import { createKnowledgeRouter } from './providers';
 import { createAiRouter } from './ai/routes';
-import { createPublicSharingRouter, createAccountSharingRouter } from './sharing';
+import { createPublicSharingRouter, createAccountSharingRouter, describeDevice } from './sharing';
 
 type Credential = User & { password_hash: string; auth_version: number };
 const badCredentials = () => new ApiError(401, 'INVALID_CREDENTIALS', 'The supplied credentials are not valid.');
@@ -33,7 +33,7 @@ export async function createV2Router(db: Database, options = { initializeSchema:
 
   router.post('/auth/register', credentialLimiter, async (req, res) => {
     const body = registerSchema.parse(req.body);
-    const id = randomUUID(), spaceId = randomUUID(), token = newToken();
+    const id = randomUUID(), spaceId = randomUUID(), token = newToken(), sessionId = randomUUID();
     const password = await hashPassword(body.password);
     const recoveryCodes = Array.from({ length: 8 }, newToken);
     // One SQL statement: account, blank space, recovery codes, session and audit all commit or roll back.
@@ -42,12 +42,12 @@ export async function createV2Router(db: Database, options = { initializeSchema:
     ), space AS (
       INSERT INTO v2_spaces(id,owner_id,name) SELECT $5,id,'My health space' FROM account RETURNING id,owner_id
     ), session AS (
-      INSERT INTO v2_sessions(token_hash,account_id,expires_at) SELECT $6,id,$7 FROM account
+      INSERT INTO v2_sessions(token_hash,account_id,expires_at,id,device) SELECT $6,id,$7,$9,$10 FROM account
     ), recovery AS (
       INSERT INTO v2_recovery_codes(token_hash,account_id) SELECT unnest($8::text[]),id FROM account
     ), audit AS (
       INSERT INTO v2_audit(space_id,actor_id,action) SELECT id,owner_id,'space.created' FROM space
-    ) SELECT * FROM account`, [id, body.name, body.email, password, spaceId, hashToken(token), new Date(Date.now() + SESSION_MS), recoveryCodes.map(hashToken)]);
+    ) SELECT * FROM account`, [id, body.name, body.email, password, spaceId, hashToken(token), new Date(Date.now() + SESSION_MS), recoveryCodes.map(hashToken), sessionId, describeDevice(req)]);
     setSessionCookie(res, token);
     const response: RegisterResponse = { ...await me(rows[0]), recoveryCodes };
     res.status(201).json(response);
@@ -57,12 +57,12 @@ export async function createV2Router(db: Database, options = { initializeSchema:
     const account = await credentials(body.email);
     const valid = await verifyPassword(body.password, account?.password_hash ?? dummyPassword);
     if (!account || !valid) throw badCredentials();
-    const token = newToken();
+    const token = newToken(), sessionId = randomUUID();
     const oldToken: unknown = req.cookies?.[COOKIE];
     const { rows } = await db.query<{ account_id: string }>(`WITH expired AS (DELETE FROM v2_sessions WHERE account_id=$1 AND (expires_at<=NOW() OR auth_version<>$5)),
       rotated AS (DELETE FROM v2_sessions WHERE token_hash=$6),
       candidate AS (SELECT id,auth_version FROM v2_accounts WHERE id=$1 AND password_hash=$4 AND auth_version=$5 FOR SHARE)
-      INSERT INTO v2_sessions(token_hash,account_id,expires_at,auth_version) SELECT $2,id,$3,auth_version FROM candidate RETURNING account_id`, [account.id, hashToken(token), new Date(Date.now() + SESSION_MS), account.password_hash, account.auth_version, typeof oldToken === 'string' ? hashToken(oldToken) : '']);
+      INSERT INTO v2_sessions(token_hash,account_id,expires_at,auth_version,id,device) SELECT $2,id,$3,auth_version,$7,$8 FROM candidate RETURNING account_id`, [account.id, hashToken(token), new Date(Date.now() + SESSION_MS), account.password_hash, account.auth_version, typeof oldToken === 'string' ? hashToken(oldToken) : '', sessionId, describeDevice(req)]);
     if (!rows[0]) throw badCredentials();
     setSessionCookie(res, token);
     res.json(await me({ id: account.id, name: account.name, email: account.email }));
@@ -95,6 +95,26 @@ export async function createV2Router(db: Database, options = { initializeSchema:
     res.locals.user = rows[0]; res.locals.sessionKey = key; next();
   });
   router.get('/me', async (_req, res) => { res.json(await me(res.locals.user as User)); });
+  router.get('/auth/sessions', async (_req, res) => {
+    const user = res.locals.user as User;
+    await db.query('DELETE FROM v2_sessions WHERE account_id=$1 AND expires_at<=NOW()', [user.id]);
+    const { rows } = await db.query<{ id: string; device: string; createdAt: string; expiresAt: string; current: boolean }>(`SELECT id,device,created_at AS "createdAt",expires_at AS "expiresAt",token_hash=$2 AS current
+      FROM v2_sessions WHERE account_id=$1 AND auth_version=(SELECT auth_version FROM v2_accounts WHERE id=$1) ORDER BY created_at,id`, [user.id, res.locals.sessionKey]);
+    res.json({ sessions: rows.map(row => ({ id: row.id, device: row.device, createdAt: iso(row.createdAt), expiresAt: iso(row.expiresAt), current: Boolean(row.current) })) });
+  });
+  router.delete('/auth/sessions/:sessionId', async (req, res) => {
+    const sessionId = idSchema.parse(req.params.sessionId), user = res.locals.user as User;
+    const { rows } = await db.query<{ token_hash: string }>('DELETE FROM v2_sessions WHERE id=$1 AND account_id=$2 RETURNING token_hash', [sessionId, user.id]);
+    if (!rows[0]) throw notFound();
+    const current = rows[0].token_hash === res.locals.sessionKey;
+    if (current) clearSessionCookie(res);
+    res.json({ ok: true, current });
+  });
+  router.post('/auth/sessions/revoke-others', async (_req, res) => {
+    const user = res.locals.user as User;
+    const { rows } = await db.query<{ id: string }>('DELETE FROM v2_sessions WHERE account_id=$1 AND token_hash<>$2 RETURNING id', [user.id, res.locals.sessionKey]);
+    res.json({ ok: true, revoked: rows.length });
+  });
   router.use(createAiRouter(db));
   router.post('/auth/logout', async (_req, res) => {
     await db.query('DELETE FROM v2_sessions WHERE token_hash=$1', [res.locals.sessionKey]);
@@ -139,6 +159,20 @@ export async function createV2Router(db: Database, options = { initializeSchema:
 
   router.get('/spaces/:spaceId', async (req, res) => {
     res.json(await snapshot(db, res.locals.user, idSchema.parse(req.params.spaceId)));
+  });
+  router.get('/spaces/:spaceId/entities', async (req, res) => {
+    const id = idSchema.parse(req.params.spaceId), query = entityPageSchema.parse(req.query), user = res.locals.user as User;
+    await accessSpace(db, user.id, id, `${query.kind}:read`);
+    const limit = query.limit ?? 50;
+    if (query.before) {
+      const cursor = (await db.query('SELECT 1 FROM v2_entities WHERE space_id=$1 AND id=$2 AND kind=$3', [id, query.before, query.kind])).rows[0];
+      if (!cursor) throw new ApiError(400, 'VALIDATION_ERROR', 'That page cursor is not in this collection.');
+    }
+    const { rows } = await db.query<Entity>(`SELECT ${entityColumns} FROM v2_entities WHERE space_id=$1 AND kind=$2
+      AND ($3::uuid IS NULL OR (created_at, id) < (SELECT created_at, id FROM v2_entities WHERE space_id=$1 AND id=$3 AND kind=$2))
+      ORDER BY created_at DESC, id DESC LIMIT $4`, [id, query.kind, query.before ?? null, limit + 1]);
+    const page = rows.slice(0, limit).map(entityOut);
+    res.json({ entities: page, nextBefore: rows.length > limit ? page.at(-1)!.id : null });
   });
   router.get('/spaces/:spaceId/export', async (req, res) => {
     const id = idSchema.parse(req.params.spaceId), user = res.locals.user as User;

@@ -10,7 +10,7 @@ afterAll(async()=>{await db.close();});
 const hdr={'X-Diabeatit-Client':'web','Origin':'http://127.0.0.1:5173'};
 async function demo(){const a=request.agent(app);await a.post('/api/demo').set(hdr).expect(201);return a;}
 describe('persistent demo API',()=>{
-  it('health check identifies demo, not clinical operation',async()=>{const r=await request(app).get('/api/health').expect(200);expect(r.body.realPatientUse).toBe(false);});
+  it('health check identifies demo, not clinical operation',async()=>{const r=await request(app).get('/api/health').set('X-Request-Id','trace-local-01').expect(200);expect(r.body.realPatientUse).toBe(false);expect(r.headers['x-request-id']).toBe('trace-local-01');const generated=await request(app).get('/api/health').expect(200);expect(generated.headers['x-request-id']).toMatch(/^[a-f0-9]{16}$/);});
   it('requires a valid session',async()=>{await request(app).get('/api/state').expect(401);});
   it('rejects cross-origin mutations',async()=>{await request(app).post('/api/demo').set({...hdr,Origin:'https://attacker.invalid'}).expect(403);});
   it('requires custom client header',async()=>{await request(app).post('/api/demo').expect(403);});

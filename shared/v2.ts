@@ -47,6 +47,11 @@ export interface UpdateEntityRequest<K extends EntityKind = EntityKind> { versio
 export interface DeleteEntityRequest { version: number }
 /** Document entities contain DocumentMetadata, never base64, including on write responses/export. */
 export interface Entity { id: string; kind: EntityKind; version: number; createdAt: string; updatedAt: string; author: Author; data: Record<string, unknown> }
+/** One page of a single record collection, newest first. Document bytes are never included. */
+export interface EntityPage { entities: Entity[]; nextBefore: string | null }
+/** A signed-in browser. The session secret is never included. */
+export interface AccountSession { id: string; device: string; createdAt: string; expiresAt: string; current: boolean }
+export interface AccountSessionsResponse { sessions: AccountSession[] }
 export type EntityCollections = Record<EntityKind, Entity[]>;
 export interface Grant { id: string; accountId: string; name: string; label: string; scopes: Scope[]; createdAt: string }
 export interface Invitation { id: string; label: string; scopes: Scope[]; expiresAt: string; createdAt: string }

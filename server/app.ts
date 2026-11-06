@@ -13,6 +13,16 @@ import type { Database, SessionRow } from './db';
 const hash = (token: string) => createHash('sha256').update(token).digest('hex');
 export function createApp(db: Database, accountRouter?: express.Router) {
   const app = express(); app.disable('x-powered-by');
+  app.use((req, res, next) => {
+    const supplied = req.get('x-request-id') ?? '';
+    const requestId = /^[A-Za-z0-9._-]{8,64}$/.test(supplied) ? supplied : randomBytes(8).toString('hex');
+    res.set('X-Request-Id', requestId);
+    if (!process.env.VITEST && req.originalUrl.startsWith('/api')) {
+      const started = Date.now();
+      res.on('finish', () => console.log(`${requestId} ${req.method} ${res.statusCode} ${Date.now() - started}ms`));
+    }
+    next();
+  });
   // Hosted behind one reverse proxy (Render); needed so rate limits key on the client address.
   if (process.env.NODE_ENV === 'production' || process.env.TRUST_PROXY === '1') app.set('trust proxy', 1);
   app.use(helmet({ contentSecurityPolicy: { directives: { defaultSrc: ["'self'"], scriptSrc: ["'self'"], styleSrc: ["'self'", "'unsafe-inline'"], imgSrc: ["'self'", 'data:', 'blob:'], connectSrc: ["'self'"], fontSrc: ["'self'"], objectSrc: ["'none'"], upgradeInsecureRequests: null } }, crossOriginEmbedderPolicy: false }));

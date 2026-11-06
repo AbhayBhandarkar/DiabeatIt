@@ -29,6 +29,11 @@ export const dateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/).refine(s => {
 const time = z.string().regex(/^(?:[01]\d|2[0-3]):[0-5]\d$/);
 const pastDate = dateSchema.refine(s => s <= intakeToday(), 'Future IST report dates are not allowed.');
 export const auditQuerySchema = z.object({ before: z.string().refine(s => /^[1-9]\d{0,18}$/.test(s) && BigInt(s) <= 9223372036854775807n, 'Invalid audit cursor.').optional() }).strict();
+export const entityPageSchema = z.object({
+  kind: z.enum(entityKinds),
+  limit: z.coerce.number().int().min(1).max(100).optional(),
+  before: idSchema.optional(),
+}).strict();
 const observedAt = z.iso.datetime({ offset: true }).refine(s => Date.parse(s) <= Date.now(), 'Future observations are not allowed.');
 const amount = z.number().finite().min(0).max(100000);
 const nutrition = { carbs: amount.nullable(), fiber: amount.nullable(), protein: amount.nullable(), kcal: amount.nullable() };

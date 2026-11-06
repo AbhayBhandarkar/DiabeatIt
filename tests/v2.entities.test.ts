@@ -143,4 +143,17 @@ describe('v2 documents', () => {
     await a.get(`${root}/documents/${entity.id}`).expect(404);
     expect((await db.query('SELECT 1 FROM v2_documents WHERE entity_id=$1', [entity.id])).rows).toHaveLength(0);
   });
+  it('pages one collection, newest first, without another workspace or file bytes', async () => {
+    const made: string[] = [];
+    for (const text of ['Page one', 'Page two', 'Page three']) made.push((await a.post(`${root}/entities`).send({ kind: 'questions', data: { text } }).expect(201)).body.id);
+    const first = await a.get(`${root}/entities`).query({ kind: 'questions', limit: 2 }).expect(200);
+    expect(first.body.entities.map((entity: { id: string }) => entity.id)).toEqual([made[2], made[1]]);
+    expect(JSON.stringify(first.body)).not.toContain(pdf);
+    expect(first.body.nextBefore).toBe(made[1]);
+    const second = await a.get(`${root}/entities`).query({ kind: 'questions', limit: 2, before: first.body.nextBefore }).expect(200);
+    expect(second.body.entities[0].id).toBe(made[0]);
+    await a.get(`${root}/entities`).query({ kind: 'questions', before: randomUUID() }).expect(400);
+    await b.get(`${root}/entities`).query({ kind: 'questions' }).expect(404);
+    await a.get(`${root}/entities`).query({ kind: 'not-a-kind' }).expect(400);
+  });
 });

@@ -47,8 +47,8 @@ export function createPublicSharingRouter(db: Database, me: (user: User) => Prom
         const { rows } = await db.query<User>(`WITH used AS (
           UPDATE v2_qr_logins SET consumed_at=NOW() WHERE id=$1 AND secret_hash=$2 AND consumed_at IS NULL AND approved_by IS NOT NULL AND NOT denied AND expires_at>NOW() RETURNING approved_by
         ), session AS (
-          INSERT INTO v2_sessions(token_hash,account_id,expires_at,auth_version) SELECT $3,a.id,$4,a.auth_version FROM v2_accounts a JOIN used u ON u.approved_by=a.id
-        ) SELECT a.id,a.name,a.email FROM v2_accounts a JOIN used u ON u.approved_by=a.id`, [id, hashToken(secret), hashToken(token), new Date(Date.now() + SESSION_MS)]);
+          INSERT INTO v2_sessions(token_hash,account_id,expires_at,auth_version,id,device) SELECT $3,a.id,$4,a.auth_version,$5,$6 FROM v2_accounts a JOIN used u ON u.approved_by=a.id
+        ) SELECT a.id,a.name,a.email FROM v2_accounts a JOIN used u ON u.approved_by=a.id`, [id, hashToken(secret), hashToken(token), new Date(Date.now() + SESSION_MS), randomUUID(), describeDevice(req)]);
         if (rows[0]) { setSessionCookie(res, token); body = { status: 'approved', me: await me(rows[0]) }; }
       }
     }

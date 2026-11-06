@@ -11,7 +11,13 @@ export async function initializeV2(db: Database): Promise<void> {
       consent_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), created_at TIMESTAMPTZ NOT NULL DEFAULT NOW())`,
     `CREATE TABLE IF NOT EXISTS v2_sessions (
       token_hash TEXT PRIMARY KEY, account_id UUID NOT NULL REFERENCES v2_accounts(id) ON DELETE CASCADE,
-      expires_at TIMESTAMPTZ NOT NULL, auth_version INTEGER NOT NULL DEFAULT 1, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW())`,
+      expires_at TIMESTAMPTZ NOT NULL, auth_version INTEGER NOT NULL DEFAULT 1, created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      id UUID, device TEXT NOT NULL DEFAULT 'This browser')`,
+    `ALTER TABLE v2_sessions ADD COLUMN IF NOT EXISTS id UUID`,
+    `ALTER TABLE v2_sessions ADD COLUMN IF NOT EXISTS device TEXT NOT NULL DEFAULT 'This browser'`,
+    `UPDATE v2_sessions SET id=gen_random_uuid() WHERE id IS NULL`,
+    `ALTER TABLE v2_sessions ALTER COLUMN id SET NOT NULL`,
+    `CREATE UNIQUE INDEX IF NOT EXISTS v2_sessions_public_id ON v2_sessions(id)`,
     `CREATE INDEX IF NOT EXISTS v2_sessions_account ON v2_sessions(account_id)`,
     `CREATE INDEX IF NOT EXISTS v2_sessions_expiry ON v2_sessions(expires_at)`,
     `CREATE TABLE IF NOT EXISTS v2_recovery_codes (

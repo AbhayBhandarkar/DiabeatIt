@@ -49,6 +49,29 @@ describe('v2 accounts and sessions', () => {
       await request(app).post('/api/v2/auth/register').send({ ...body, ...override }).expect(400);
     }
   });
+  it('lists this account’s browsers and revokes the others without ending the current one', async () => {
+    const a = await register();
+    const other = request.agent(app);
+    await other.post('/api/v2/auth/login').set('User-Agent', 'Mozilla/5.0 (Windows NT 10.0) Chrome/120.0.0.0').send({ email: a.email, password }).expect(200);
+    const stranger = await register();
+    const listed = await a.agent.get('/api/v2/auth/sessions').expect(200);
+    expect(listed.body.sessions).toHaveLength(2);
+    expect(listed.body.sessions.filter((session: { current: boolean }) => session.current)).toHaveLength(1);
+    const remote = listed.body.sessions.find((session: { current: boolean; device: string }) => !session.current);
+    expect(remote.device).toBe('Chrome on Windows');
+    expect(Object.keys(remote).sort()).toEqual(['createdAt', 'current', 'device', 'expiresAt', 'id']);
+    await stranger.agent.delete(`/api/v2/auth/sessions/${remote.id}`).expect(404);
+    await a.agent.delete(`/api/v2/auth/sessions/${remote.id}`).expect(200);
+    await other.get('/api/v2/me').expect(401);
+    await a.agent.get('/api/v2/me').expect(200);
+    await other.post('/api/v2/auth/login').send({ email: a.email, password }).expect(200);
+    const revoked = await a.agent.post('/api/v2/auth/sessions/revoke-others').send({}).expect(200);
+    expect(revoked.body.revoked).toBe(1);
+    await other.get('/api/v2/me').expect(401);
+    const current = (await a.agent.get('/api/v2/auth/sessions').expect(200)).body.sessions.find((session: { current: boolean }) => session.current);
+    await a.agent.delete(`/api/v2/auth/sessions/${current.id}`).expect(200);
+    await a.agent.get('/api/v2/me').expect(401);
+  });
   it('logs in case-insensitively, rejects bad passwords and revokes logout tokens', async () => {
     const a = await register(); const b = request.agent(app);
     await b.post('/api/v2/auth/login').send({ email: a.email, password: 'incorrect value' }).expect(401);
