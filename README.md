@@ -245,7 +245,7 @@ Entities are versioned JSON rows (`v2_entities`) inside a space, validated by Zo
 
 `medicines`, `intakes`, `glucose`, `meals`, `recipes`, `documents`, `questions`, `tasks`, `symptoms`, `lessons`, `reviews`, **`appointments`** `{ date, clinician, specialty, facility, reason, notes, changes, followUp? }`, **`labs`** `{ name, value, unit, takenOn, notes }`.
 
-Other tables: `v2_accounts` (scrypt hashes), `v2_sessions` (hashed tokens), `v2_recovery_codes`, `v2_spaces`, `v2_grants`, `v2_invitations`, `v2_documents`, `v2_audit` (immutable via trigger), `v2_qr_logins`, `v2_clinician_links`, `app_schema_versions` (current: 2). Migration: `npm run db:migrate` (advisory lock, single transaction).
+Other tables: `v2_accounts` (scrypt hashes), `v2_sessions` (hashed tokens), `v2_recovery_codes`, `v2_spaces`, `v2_grants`, `v2_invitations`, `v2_documents`, `v2_audit` (immutable via trigger), `v2_qr_logins`, `v2_clinician_links`, `app_schema_versions` (current: 3). Migration: `npm run db:migrate` (advisory lock, single transaction).
 
 ## 8. Security and privacy
 

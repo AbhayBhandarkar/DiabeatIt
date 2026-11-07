@@ -1,3 +1,6 @@
+/** Production refuses to start until `npm run db:migrate` has recorded this version. */
+export const requiredSchemaVersion = 3;
+
 export function validateRuntime(env:NodeJS.ProcessEnv=process.env){
  const production=env.NODE_ENV==='production';
  const port=Number(env.PORT||3001);

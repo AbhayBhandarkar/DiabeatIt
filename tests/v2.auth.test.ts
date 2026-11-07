@@ -5,6 +5,7 @@ import request from 'supertest';
 import { randomUUID } from 'node:crypto';
 import { openDatabase, type Database } from '../server/db';
 import { createV2Router } from '../server/v2';
+import { initializeV2 } from '../server/v2/storage';
 import { hashToken } from '../server/v2/security';
 
 let db: Database, app: Express;
@@ -71,6 +72,15 @@ describe('v2 accounts and sessions', () => {
     const current = (await a.agent.get('/api/v2/auth/sessions').expect(200)).body.sessions.find((session: { current: boolean }) => session.current);
     await a.agent.delete(`/api/v2/auth/sessions/${current.id}`).expect(200);
     await a.agent.get('/api/v2/me').expect(401);
+  });
+  it('relabels sign-ins that predate a device name and leaves real labels alone', async () => {
+    const a = await register();
+    await db.query(`UPDATE v2_sessions SET device='This browser' WHERE account_id=$1`, [a.user.id]);
+    await initializeV2(db);
+    expect((await db.query<{ device: string }>('SELECT device FROM v2_sessions WHERE account_id=$1', [a.user.id])).rows[0].device).toBe('Earlier sign-in');
+    await db.query(`UPDATE v2_sessions SET device='Chrome on Windows' WHERE account_id=$1`, [a.user.id]);
+    await initializeV2(db);
+    expect((await db.query<{ device: string }>('SELECT device FROM v2_sessions WHERE account_id=$1', [a.user.id])).rows[0].device).toBe('Chrome on Windows');
   });
   it('logs in case-insensitively, rejects bad passwords and revokes logout tokens', async () => {
     const a = await register(); const b = request.agent(app);

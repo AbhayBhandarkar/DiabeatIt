@@ -28,14 +28,23 @@ export function OpenTabReminder({ enabled }: { enabled: boolean }) {
     if (!next) return;
     const delay = next.at - Date.now();
     if (delay <= 0 || delay > 12 * 60 * 60 * 1000) return;
-    const timer = window.setTimeout(() => {
-      const note = new Notification('Time to record a dose', {
-        body: `${next.name} · ${next.time} IST. This only appears while DiabeatIT stays open. It does not mark the dose as taken.`,
-        tag: `diabeatit-dose-${next.id}-${next.time}`,
-      });
-      note.onclick = () => { window.focus(); window.dispatchEvent(new Event('diabeatit-remind')); note.close(); };
-    }, delay);
+    const timer = window.setTimeout(() => { void showDoseNotice(next); }, delay);
     return () => window.clearTimeout(timer);
   }, [enabled, snapshot]);
   return null;
+}
+
+async function showDoseNotice(next: { id: string; name: string; time: string }) {
+  const title = 'Time to record a dose';
+  const body = `${next.name} · ${next.time} IST. This only appears while DiabeatIT stays open. It does not mark the dose as taken.`;
+  const tag = `diabeatit-dose-${next.id}-${next.time}`;
+  try {
+    const registration = 'serviceWorker' in navigator ? await navigator.serviceWorker.getRegistration() : undefined;
+    if (registration?.active) {
+      registration.active.postMessage({ type: 'diabeatit-reminder', title, body, tag });
+      return;
+    }
+  } catch { /* A page notification is the fallback where no service worker is registered. */ }
+  const note = new Notification(title, { body, tag });
+  note.onclick = () => { window.focus(); window.dispatchEvent(new Event('diabeatit-remind')); note.close(); };
 }
