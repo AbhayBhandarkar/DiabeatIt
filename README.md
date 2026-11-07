@@ -257,14 +257,16 @@ Other tables: `v2_accounts` (scrypt hashes), `v2_sessions` (hashed tokens), `v2_
 - Doctor links: random 256-bit token in the URL fragment (not sent in server logs or Referer), 1–30 day expiry, revocable, every view audited, read-only, limited record kinds (no documents).
 - AI: explicit consent for photos, photos not stored, fixed operator-configured endpoint (no user-supplied URLs), schema validation, prompt-injection notice in every system prompt, no PHI in logs.
 
-## 9. Deploying (Render + Neon, free)
+## 9. Deploying (Render, free)
 
-1. **Database (Neon):** create a project, copy the pooled connection string (`…?sslmode=require`). Run the migration once from your machine: `DATABASE_URL="<url>" npm run db:migrate`.
-2. **Web service (Render):** New → Blueprint → this repo (`render.yaml`). Fill the secret prompts: `DATABASE_URL`, `GROQ_API_KEY`, `FDC_API_KEY`, `APP_ORIGIN` (= the service URL, e.g. `https://diabeatit.onrender.com`).
+1. **Render:** New → Blueprint → this repo. `render.yaml` creates the web service **and** a free PostgreSQL database (`diabeatit-db`) and links them via `DATABASE_URL`. Fill the secret prompts: `GROQ_API_KEY`, `FDC_API_KEY`, `APP_ORIGIN` (= the service URL, e.g. `https://diabeatit.onrender.com`).
+2. The start command runs `npm run db:migrate` before the server, so schema changes ship with each deploy (free instances have no pre-deploy step; the migration is idempotent and lock-guarded).
 3. Wait for the health check (`/api/health`), then optionally seed the showcase: `node scripts/seed-showcase.mjs https://diabeatit.onrender.com`.
 4. On iPhone: open the URL in Safari → Share → **Add to Home Screen**.
 
-**Current deployment (5 Nov 2026):** Render service `diabeatit` (Singapore, free) auto-deploys from `main`. The database is a Neon *claimable* project (`tiny-mud-51973901`, Singapore) created without an account; it **expires on 8 Nov 2026 unless claimed**. To keep it: run `neon claim accept tiny-mud-51973901` on the machine that created it (or create a new Neon project and migrate), choose the organisation, then copy the new connection string into Render → Environment → `DATABASE_URL` (claiming rotates the password).
+Any other PostgreSQL (e.g. Neon, with `?sslmode=require`) works: replace `DATABASE_URL` in Render → Environment.
+
+**Current deployment (7 Nov 2026):** Render service `diabeatit` and database `diabeatit-db` (Singapore, free) auto-deploy from `main`. Render’s free PostgreSQL **expires 30 days after creation** (about 7 Dec 2026); before then upgrade it or move to Neon Free (permanent) and update `DATABASE_URL`.
 
 Free-tier facts (checked 5 Nov 2026): Render free web services sleep after 15 min idle (~1 min cold start) and get 750 instance-hours/month; Neon Free is permanent with 1 GB storage per project, 100 CU-hours/month and scale-to-zero. Paid upgrade path: Render Starter + Neon Launch (≈ US$7 + usage per month).
 

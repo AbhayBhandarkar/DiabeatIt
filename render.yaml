@@ -1,5 +1,11 @@
-# Render Blueprint: one free web service. PostgreSQL is hosted on Neon (DATABASE_URL).
+# Render Blueprint: one free web service and one free PostgreSQL database, linked by DATABASE_URL.
 # Secrets use sync:false, so Render asks for them in the dashboard; they are never stored in git.
+databases:
+  - name: diabeatit-db
+    plan: free
+    region: singapore
+    databaseName: diabeatit
+    user: diabeatit
 services:
   - type: web
     name: diabeatit
@@ -7,7 +13,8 @@ services:
     plan: free
     region: singapore
     buildCommand: npm ci --include=dev && npm run build
-    startCommand: npm start
+    # Free instances have no pre-deploy step; the migration is idempotent and lock-guarded.
+    startCommand: npm run db:migrate && npm start
     healthCheckPath: /api/health
     autoDeploy: true
     envVars:
@@ -32,7 +39,9 @@ services:
       - key: APP_ORIGIN
         sync: false
       - key: DATABASE_URL
-        sync: false
+        fromDatabase:
+          name: diabeatit-db
+          property: connectionString
       - key: GROQ_API_KEY
         sync: false
       - key: FDC_API_KEY
